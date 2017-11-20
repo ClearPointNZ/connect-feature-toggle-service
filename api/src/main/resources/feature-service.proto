@@ -1,0 +1,44 @@
+syntax = "proto3";
+package connect_features;
+
+option java_package = "cd.connect.features.grpc";
+option java_outer_classname = "FeatureStateService";
+
+message FeatureStates {
+    repeated FeatureState states = 1;
+}
+
+message FeatureState {
+    string name = 1;
+    string whenEnabled = 2;
+    bool locked = 3;
+}
+
+message FeatureName {
+    string name = 1;
+}
+
+// grpc does not allow nothing to be passed
+message Empty {}
+
+message Status {}
+
+message FeatureCount {
+    int32 count = 1;
+}
+
+service FeatureService {
+    rpc all_features (Empty) returns (FeatureStates) {}
+    rpc apply_all (FeatureStates) returns (FeatureStates) {}
+    rpc refresh (Empty) returns (Status) {}
+    rpc feature_count (Empty) returns (FeatureCount) {}
+    rpc enabled_count (Empty) returns (FeatureCount) {}
+    rpc enable_all (Empty) returns (Status) {}
+    rpc delete (FeatureName) returns (Status) {}
+    rpc enable (FeatureName) returns (Status) {}
+    rpc disable (FeatureName) returns (Status) {}
+    rpc lock (FeatureName) returns (Status) {}
+    rpc unlock (FeatureName) returns (Status) {}
+    rpc watch (Empty) returns (stream FeatureState) {}
+}
+
