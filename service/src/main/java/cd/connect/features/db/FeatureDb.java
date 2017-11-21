@@ -12,11 +12,11 @@ import java.util.function.Consumer;
 public interface FeatureDb {
   void ensureExists(Map<String, FeatureSourceStatus> features);
 
-  void watch(Consumer<FeatureState> changed);
+  void watch(Consumer<WatchSignal> changed);
 
   /**
    * Get an immutable map of the current features
-   * 
+   *
    * @return
    */
   Map<String, FeatureState> getFeatures();

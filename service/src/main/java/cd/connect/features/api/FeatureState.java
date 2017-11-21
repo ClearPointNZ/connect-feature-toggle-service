@@ -72,5 +72,13 @@ public class FeatureState implements Comparable<FeatureState> {
   public int compareTo(FeatureState other) {
     return this.name.compareTo(other.name);
   }
-  
+
+	@Override
+	public String toString() {
+		return "FeatureState{" +
+			"name='" + name + '\'' +
+			", whenEnabled=" + whenEnabled +
+			", locked=" + locked +
+			'}';
+	}
 }

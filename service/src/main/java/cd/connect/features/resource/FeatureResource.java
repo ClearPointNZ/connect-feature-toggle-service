@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Response;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ public class FeatureResource implements FeatureService {
     }
 
     entries.forEach(featureDb::apply);
-    
+
     return all_features();
   }
 
@@ -101,7 +102,7 @@ public class FeatureResource implements FeatureService {
     try {
       checkFunc.check(fs);
     } catch (BadStateException e) {
-      throw new BadRequestException(e.getMessage());
+      throw new BadRequestException(Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build());
     }
 
     return fs.getName();

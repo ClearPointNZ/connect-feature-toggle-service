@@ -14,7 +14,7 @@ import java.io.IOException;
  */
 public class GrpcServer {
   private static final Logger log = LoggerFactory.getLogger(GrpcServer.class);
-  
+
   @ConfigKey("grpc.port")
   Integer port = 2865;
 
@@ -29,11 +29,11 @@ public class GrpcServer {
   @PostConfigured
   public void init() throws IOException {
     log.info("starting grpc server on port {}", port);
-    
+
     server = ServerBuilder.forPort(port).addService(featureRpcResource).build().start();
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      System.out.println("Shutting down grpc server on port " + port);
+      log.info("Shutting down grpc server on port {}" + port);
       server.shutdown();
     }));
   }

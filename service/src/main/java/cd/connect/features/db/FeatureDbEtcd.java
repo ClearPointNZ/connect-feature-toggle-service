@@ -9,6 +9,7 @@ import com.coreos.jetcd.KV;
 import com.coreos.jetcd.Watch;
 import com.coreos.jetcd.data.ByteSequence;
 import com.coreos.jetcd.exception.ClosedWatcherException;
+import com.coreos.jetcd.kv.GetResponse;
 import com.coreos.jetcd.kv.PutResponse;
 import com.coreos.jetcd.watch.WatchEvent;
 import com.coreos.jetcd.watch.WatchResponse;
@@ -80,6 +81,10 @@ public class FeatureDbEtcd implements FeatureDb {
     Runtime.getRuntime().addShutdownHook(new Thread(() -> inflightWatchers.forEach(Watch.Watcher::close)));
   }
 
+  private String fnOffset(String name) {
+  	return offset + "/" + name;
+  }
+
   /**
    * Check to see if the key contains the features we have just been passed, and if so, remove them.
    *
@@ -115,6 +120,13 @@ public class FeatureDbEtcd implements FeatureDb {
   }
 
 
+  protected CompletableFuture<GetResponse> kvGet(String key) {
+  	return kvClient.get(new ByteSequence(key));
+  }
+
+  protected CompletableFuture<PutResponse> kvPut(String key, String value) {
+  	return kvClient.put(new ByteSequence(key), new ByteSequence(value));
+  }
 
   @Override
   public void ensureExists(Map<String, FeatureSourceStatus> features) {
@@ -122,7 +134,7 @@ public class FeatureDbEtcd implements FeatureDb {
     foundFeatures.putAll(features);
 
     try {
-      kvClient.get(new ByteSequence(offset)).thenApply(resp -> {
+      kvGet(offset).thenApply(resp -> {
         // drop all features that exist.
         boolean updateFeatureListRequired = true; // default that if the key isn't found, we need to re-write
 
@@ -167,6 +179,15 @@ public class FeatureDbEtcd implements FeatureDb {
     }
   }
 
+  private String featureStateToJson(FeatureState featureState) {
+	  try {
+		  return mapper.writeValueAsString(featureState);
+	  } catch (JsonProcessingException e) {
+		  log.error("Cannot encode feature state `{}`", featureState.toString(), e);
+		  throw new RuntimeException("Unable to encode feature to json", e);
+	  }
+  }
+
   private void loadFeatures(Set<String> featureNames) {
     log.info("loading features base on feature set");
     // deal with the now deleted states
@@ -187,7 +208,7 @@ public class FeatureDbEtcd implements FeatureDb {
     // so we are all good with getting their state
 
     featureNames.forEach(fn -> {
-      kvClient.get(new ByteSequence(offset + "/" + fn)).thenApply(resp -> {
+      kvGet(fnOffset(fn)).thenApply(resp -> {
         if (!resp.getKvs().isEmpty()) {
           loadAndSignalFeatureStateChange(fn, resp.getKvs().get(0).getValue().toStringUtf8());
         }
@@ -256,7 +277,7 @@ public class FeatureDbEtcd implements FeatureDb {
   }
 
   private void watchFeatureStateChange(String featureName) {
-    Watch.Watcher watching = watchClient.watch(new ByteSequence(offset + "/" + featureName));
+    Watch.Watcher watching = watchClient.watch(new ByteSequence(fnOffset(featureName)));
 
     inflightWatchers.add(watching);
 
@@ -297,7 +318,7 @@ public class FeatureDbEtcd implements FeatureDb {
 
     log.info("writing master list of features: {}", features);
 
-    return kvClient.put(new ByteSequence(offset), new ByteSequence(features));
+    return kvPut(offset, features);
   }
 
   private String jsonFeature(String name, FeatureSourceStatus status) {
@@ -320,8 +341,7 @@ public class FeatureDbEtcd implements FeatureDb {
     foundFeatures.forEach((featureName, status) -> {
       log.info("writing new feature {}: {}", featureName, status.name());
 
-      CompletableFuture<PutResponse> re = kvClient.put(
-        new ByteSequence(offset + "/" + featureName), new ByteSequence(jsonFeature(featureName, status)));
+      CompletableFuture<PutResponse> re = kvPut(fnOffset(featureName), jsonFeature(featureName, status));
 
       responses.add(re);
     });
@@ -333,8 +353,8 @@ public class FeatureDbEtcd implements FeatureDb {
   }
 
   @Override
-  public void watch(Consumer<FeatureState> changed) {
-
+  public void watch(Consumer<WatchSignal> changed) {
+	  signalListener.add(changed);
   }
 
   @Override
@@ -353,4 +373,10 @@ public class FeatureDbEtcd implements FeatureDb {
   public void refresh() {
     // no-op - etcd is watched
   }
+
+	@Override
+	public void apply(FeatureState featureState) {
+  	log.debug("applying feature state: {}", featureState.toString());
+  	kvPut(fnOffset(featureState.getName()), featureStateToJson(featureState));
+	}
 }

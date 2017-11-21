@@ -25,31 +25,32 @@ public class FeatureRpcResource extends FeatureServiceGrpc.FeatureServiceImplBas
   }
 
   private String localDateTimeToString(LocalDateTime time) {
-
+	  return null;
   }
 
   private LocalDateTime stringToLocalDateTime(String str) {
-
+	  return null;
   }
 
   private FeatureStateService.FeatureState fromFeatureState(FeatureState fs) {
-    FeatureStateService.FeatureState.newBuilder().setLocked(fs.isLocked()).setWhenEnabled()
+//    FeatureStateService.FeatureState.newBuilder().setLocked(fs.isLocked()).setWhenEnabled()
+	  return null;
   }
 
   private FeatureState toFeatureState(FeatureStateService.FeatureState state) {
-
+	  return null;
   }
 
   @Override
   public void allFeatures(FeatureStateService.Empty request, StreamObserver<FeatureStateService.FeatureStates> resp) {
-    FeatureStateService.FeatureStates.Builder builder = FeatureStateService.FeatureStates.newBuilder();
-
-    featureDb.getFeatures().forEach((name, fs) -> {
-      
-      builder.addStates(fs);
-    });
-
-    resp.onNext(new ArrayList<>(.values()));
+//    FeatureStateService.FeatureStates.Builder builder = FeatureStateService.FeatureStates.newBuilder();
+//
+//    featureDb.getFeatures().forEach((name, fs) -> {
+//
+//      builder.addStates(fs);
+//    });
+//
+//    resp.onNext(new ArrayList<>(.values()));
     super.allFeatures(request, resp);
   }
 
