@@ -1,5 +1,6 @@
 package cd.connect.features.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDateTime;
@@ -56,6 +57,7 @@ public class FeatureState implements Comparable<FeatureState> {
     return name;
   }
 
+  @JsonIgnore
   public boolean isEnabled() {
     return whenEnabled != null;
   }

@@ -81,7 +81,7 @@ public class FeatureDbEtcd implements FeatureDb {
     Runtime.getRuntime().addShutdownHook(new Thread(() -> inflightWatchers.forEach(Watch.Watcher::close)));
   }
 
-  private String fnOffset(String name) {
+  public String fnOffset(String name) {
   	return offset + "/" + name;
   }
 
@@ -158,10 +158,29 @@ public class FeatureDbEtcd implements FeatureDb {
 
     loadFeatures(features.keySet());
 
-    watchPool.submit(this::watchFeatureNamesChange);
+    watchForFeatureNameChanges();
+
+    watchForFeatureChanges(features.keySet());
   }
 
-  private Set<String> featureNamesFromJson(String features) {
+	protected void watchForFeatureNameChanges() {
+		watchPool.submit(this::watchFeatureNamesChange);
+	}
+
+	protected void watchForFeatureChanges(Set<String> featureNames) {
+
+		// now kill any and all feature watchers
+		inflightWatchers.forEach(Watch.Watcher::close);
+
+		// now go and watch all of the features again
+		featureNames.forEach(fn -> {
+			watchPool.submit(() -> {
+				watchFeatureStateChange(fn);
+			});
+		});
+	}
+
+	private Set<String> featureNamesFromJson(String features) {
     try {
       return mapper.readValue(features, STRING_SET);
     } catch (IOException e) {
@@ -188,7 +207,7 @@ public class FeatureDbEtcd implements FeatureDb {
 	  }
   }
 
-  private void loadFeatures(Set<String> featureNames) {
+  protected void loadFeatures(Set<String> featureNames) {
     log.info("loading features base on feature set");
     // deal with the now deleted states
     Map<String, FeatureState> deletedStates = new HashMap<>(states);
@@ -217,19 +236,13 @@ public class FeatureDbEtcd implements FeatureDb {
       });
     });
 
-    // now kill any and all feature watchers
-    inflightWatchers.forEach(Watch.Watcher::close);
-
-    // now go and watch all of the features again
-    featureNames.forEach(fn -> {
-      watchPool.submit(() -> {
-        watchFeatureStateChange(fn);
-      });
-    });
   }
 
   private void loadFeatures(String value) {
-    loadFeatures(featureNamesFromJson(value));
+	  Set<String> featureNames = featureNamesFromJson(value);
+
+	  loadFeatures(featureNames);
+	  watchForFeatureChanges(featureNames);
   }
 
   /**
