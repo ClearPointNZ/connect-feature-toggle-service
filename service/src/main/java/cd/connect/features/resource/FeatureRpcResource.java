@@ -9,6 +9,9 @@ import io.grpc.stub.StreamObserver;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 /**
@@ -24,34 +27,43 @@ public class FeatureRpcResource extends FeatureServiceGrpc.FeatureServiceImplBas
     this.featureStateChangeService = featureStateChangeService;
   }
 
+  // return ISO8601
   private String localDateTimeToString(LocalDateTime time) {
+  	if (time != null) {
+		  return time.atZone(ZoneOffset.UTC).toString();
+	  }
+
 	  return null;
   }
 
+  // expect ISO8601
   private LocalDateTime stringToLocalDateTime(String str) {
-	  return null;
+  	if (str == null) {
+		  return null;
+	  }
+
+	  return LocalDateTime.parse(str);
   }
 
   private FeatureStateService.FeatureState fromFeatureState(FeatureState fs) {
-//    FeatureStateService.FeatureState.newBuilder().setLocked(fs.isLocked()).setWhenEnabled()
-	  return null;
+    return FeatureStateService.FeatureState.newBuilder()
+	    .setName(fs.getName())
+	    .setLocked(fs.isLocked())
+	    .setWhenEnabled(localDateTimeToString(fs.getWhenEnabled()))
+	    .build();
   }
 
   private FeatureState toFeatureState(FeatureStateService.FeatureState state) {
-	  return null;
+  	return new FeatureState(state.getName(), stringToLocalDateTime(state.getWhenEnabled()), state.getLocked());
   }
 
   @Override
   public void allFeatures(FeatureStateService.Empty request, StreamObserver<FeatureStateService.FeatureStates> resp) {
-//    FeatureStateService.FeatureStates.Builder builder = FeatureStateService.FeatureStates.newBuilder();
-//
-//    featureDb.getFeatures().forEach((name, fs) -> {
-//
-//      builder.addStates(fs);
-//    });
-//
-//    resp.onNext(new ArrayList<>(.values()));
-    super.allFeatures(request, resp);
+	  FeatureStateService.FeatureStates.Builder fsBuilder = FeatureStateService.FeatureStates.newBuilder();
+	  featureDb.getFeatures().forEach((name, fs) -> {
+	  	fsBuilder.addStates(fromFeatureState(fs));
+	  });
+	  resp.onNext(fsBuilder.build());
   }
 
   @Override

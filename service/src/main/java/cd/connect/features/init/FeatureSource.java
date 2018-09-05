@@ -1,5 +1,6 @@
 package cd.connect.features.init;
 
+import cd.connect.features.api.FeatureSourceStatus;
 import cd.connect.features.db.FeatureDb;
 import com.bluetrainsoftware.common.config.ConfigKey;
 import net.stickycode.stereotype.configured.PostConfigured;

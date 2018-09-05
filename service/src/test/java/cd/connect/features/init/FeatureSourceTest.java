@@ -1,6 +1,7 @@
 package cd.connect.features.init;
 
 import cd.connect.features.SampleFeatures;
+import cd.connect.features.api.FeatureSourceStatus;
 import org.junit.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;

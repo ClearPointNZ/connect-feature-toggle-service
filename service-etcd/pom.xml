@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
   <groupId>cd.connect.features</groupId>
-	<artifactId>connect-feature-service</artifactId>
+	<artifactId>connect-feature-service-etcd</artifactId>
 	<version>1.1-SNAPSHOT</version>
-	<name>feature-service</name>
+	<name>feature-service-etcd</name>
 
 	<description>
 
@@ -37,30 +37,19 @@
 
 
   <dependencies>
-	  <!-- jersey -->
-	  <dependency>
-		  <groupId>cd.connect.composites.java</groupId>
-		  <artifactId>connect-composite-jersey</artifactId>
-		  <version>[1.1, 2)</version>
-	  </dependency>
-
-	  <dependency>
-		  <groupId>cd.connect.composites.java</groupId>
-		  <artifactId>connect-composite-prometheus</artifactId>
-		  <version>[1.1,2)</version>
-	  </dependency>
-
 	  <dependency>
 		  <groupId>cd.connect.features</groupId>
 		  <artifactId>connect-feature-service-db-api</artifactId>
 		  <version>1.1-SNAPSHOT</version>
 	  </dependency>
-
 	  <dependency>
 		  <groupId>cd.connect.features</groupId>
-		  <artifactId>connect-feature-service-java-api</artifactId>
+		  <artifactId>connect-feature-service</artifactId>
 		  <version>1.1-SNAPSHOT</version>
 	  </dependency>
+
+	  <!-- jersey -->
+
 
 	  <!-- provided, we don't dictate these versions or combinations -->
 	  <dependency>
@@ -84,32 +73,6 @@
 		  <scope>provided</scope>
 	  </dependency>
 	  
-	  <!-- grpc -->
-	  <dependency>
-		  <groupId>io.grpc</groupId>
-		  <artifactId>grpc-netty</artifactId>
-		  <version>1.7.0</version>
-	  </dependency>
-	  <dependency>
-		  <groupId>io.grpc</groupId>
-		  <artifactId>grpc-protobuf</artifactId>
-		  <version>1.7.0</version>
-	  </dependency>
-	  <dependency>
-		  <groupId>io.grpc</groupId>
-		  <artifactId>grpc-stub</artifactId>
-		  <version>1.7.0</version>
-	  </dependency>
-
-	  <!-- java etcd -->
-	  <dependency>
-		  <groupId>com.coreos</groupId>
-		  <artifactId>jetcd-core</artifactId>
-		  <version>0.0.1</version>
-	  </dependency>
-
-
-
 	  <!-- testing -->
 	  <dependency>
 		  <groupId>cd.connect.composites.java</groupId>
@@ -117,6 +80,8 @@
 		  <version>[1.1, 2)</version>
 		  <scope>test</scope>
 	  </dependency>
+
+	  <!-- spring and its web app setup. ideally we should swap this with Dagger. -->
 
 	  <dependency>
 		  <groupId>cd.connect.composites.java</groupId>
@@ -127,62 +92,7 @@
   </dependencies>
 
   <build>
-	  <extensions>
-		  <extension>
-			  <groupId>kr.motd.maven</groupId>
-			  <artifactId>os-maven-plugin</artifactId>
-			  <version>1.5.0.Final</version>
-		  </extension>
-	  </extensions>
 	  <plugins>
-		  <plugin>
-			  <groupId>org.apache.maven.plugins</groupId>
-			  <artifactId>maven-dependency-plugin</artifactId>
-			  <executions>
-				  <execution>
-					  <id>unpack feature service definition</id>
-					  <phase>initialize</phase>
-					  <goals>
-						  <goal>unpack</goal>
-					  </goals>
-					  <!--<phase>generate-sources</phase>-->
-					  <configuration>
-						  <artifactItems>
-							  <artifactItem>
-								  <groupId>cd.connect.features</groupId>
-								  <artifactId>connect-feature-api</artifactId>
-								  <version>1.1-SNAPSHOT</version>
-								  <type>jar</type>
-								  <outputDirectory>${project.basedir}/target/protobuf</outputDirectory>
-							  </artifactItem>
-						  </artifactItems>
-						  <overWriteReleases>true</overWriteReleases>
-						  <overWriteSnapshots>true</overWriteSnapshots>
-					  </configuration>
-				  </execution>
-			  </executions>
-		  </plugin>
-		  <plugin>
-			  <groupId>org.xolstice.maven.plugins</groupId>
-			  <artifactId>protobuf-maven-plugin</artifactId>
-			  <version>0.5.0</version>
-			  <configuration>
-				  <protocArtifact>com.google.protobuf:protoc:3.4.0:exe:${os.detected.classifier}</protocArtifact>
-				  <pluginId>grpc-java</pluginId>
-				  <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.7.0:exe:${os.detected.classifier}</pluginArtifact>
-				  <protoSourceRoot>target/protobuf</protoSourceRoot>
-			  </configuration>
-			  <executions>
-				  <execution>
-					  <id>grpc</id>
-					  <phase>generate-sources</phase>
-					  <goals>
-						  <goal>compile</goal>
-						  <goal>compile-custom</goal>
-					  </goals>
-				  </execution>
-			  </executions>
-		  </plugin>
       <plugin>
         <groupId>io.repaint.maven</groupId>
         <artifactId>tiles-maven-plugin</artifactId>
