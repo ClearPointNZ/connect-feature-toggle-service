@@ -3,11 +3,15 @@ package cd.connect.features.mysql;
 import cd.connect.features.api.FeatureSourceStatus;
 import cd.connect.features.api.FeatureState;
 import cd.connect.features.db.FeatureDb;
+import cd.connect.features.sql.EbeanHolder;
 import cd.connect.features.sql.SqlFeatureState;
 import com.bluetrainsoftware.common.config.ConfigKey;
+import com.bluetrainsoftware.common.config.PreStart;
 import io.ebean.EbeanServer;
 import io.ebean.annotation.Transactional;
 import net.stickycode.stereotype.configured.PostConfigured;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
@@ -21,20 +25,24 @@ import java.util.function.Consumer;
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
  */
 public class FeatureDbMySql implements FeatureDb {
+  private static final Logger log = LoggerFactory.getLogger(FeatureDbMySql.class);
+
 	@ConfigKey("mysql.refresh-period-in-seconds")
 	Integer refreshPeriod;
 
-	private final EbeanServer ebeanServer;
+	private final EbeanHolder ebeanHolder;
   private final List<Consumer<WatchSignal>> inflightWatchers = new ArrayList<>();
 
 	@Inject
-  public FeatureDbMySql(EbeanServer ebeanServer) {
-    this.ebeanServer = ebeanServer;
+  public FeatureDbMySql(EbeanHolder ebeanServer) {
+    this.ebeanHolder = ebeanServer;
   }
 
   @Override
   @Transactional
 	public void ensureExists(Map<String, FeatureSourceStatus> features) {
+	  EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
+
     features.entrySet().stream().forEach((entry) -> {
       SqlFeatureState featureState = ebeanServer.find(SqlFeatureState.class, entry.getKey());
 
@@ -67,6 +75,8 @@ public class FeatureDbMySql implements FeatureDb {
 
 	@Override
 	public Map<String, FeatureState> getFeatures() {
+    EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
+
 	  Map<String, FeatureState> states = new HashMap<>();
 
 	  ebeanServer.find(SqlFeatureState.class).findEach(fs -> {
@@ -78,6 +88,8 @@ public class FeatureDbMySql implements FeatureDb {
 
 	@Override
 	public FeatureState getFeature(String name) {
+    EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
+
     SqlFeatureState fs = ebeanServer.find(SqlFeatureState.class, name);
 
     return fs == null ? null : fs.toFeatureState();
@@ -90,6 +102,8 @@ public class FeatureDbMySql implements FeatureDb {
 	@Override
   @Transactional
 	public void apply(FeatureState featureState) {
+    EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
+    
     SqlFeatureState fs = ebeanServer.find(SqlFeatureState.class, featureState.getName());
     if (fs == null) {
       ebeanServer.save(SqlFeatureState.fromFeatureState(featureState));
@@ -101,8 +115,8 @@ public class FeatureDbMySql implements FeatureDb {
 	}
 
 	@Override
-  @PostConfigured
+  @PreStart
 	public void init() {
-	  // read in all feature toggles, create the ones
+	  log.info("prestart in feature-db-mysql");
 	}
 }

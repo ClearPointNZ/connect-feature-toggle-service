@@ -2,15 +2,18 @@ package cd.connect.features.sql;
 
 import com.bluetrainsoftware.common.config.ConfigKey;
 import io.ebean.EbeanServer;
+import io.ebean.annotation.Platform;
+import io.ebean.config.DbMigrationConfig;
 import io.ebean.config.ServerConfig;
+import net.stickycode.stereotype.configured.PostConfigured;
 import org.avaje.datasource.DataSourceConfig;
-import org.springframework.beans.factory.FactoryBean;
 
 /**
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
  */
-public class EbeanServerFactory implements FactoryBean<EbeanServer> {
-
+public class EbeanHolder {
+	private EbeanServer ebeanServer;
+	
 	@ConfigKey("db.url")
 	String dbUrl;
 	@ConfigKey("db.driver")
@@ -22,12 +25,8 @@ public class EbeanServerFactory implements FactoryBean<EbeanServer> {
 	@ConfigKey("db.max-connections")
 	Integer maxConnections = 3;
 
-	@Override
-	public EbeanServer getObject() throws Exception {
-		return createEbeanServer();
-	}
-
-	private EbeanServer createEbeanServer() {
+	@PostConfigured
+	public void init() {
 		ServerConfig config = new ServerConfig();
 
 		DataSourceConfig dsConfig = new DataSourceConfig();
@@ -40,18 +39,15 @@ public class EbeanServerFactory implements FactoryBean<EbeanServer> {
 
 		config.setDataSourceConfig(dsConfig);
 
-		config.setDdlRun(true);
+		DbMigrationConfig migrationConfig = new DbMigrationConfig();
+		migrationConfig.setPlatform(Platform.MYSQL);
+		migrationConfig.setRunMigration(true);
+		config.setMigrationConfig(migrationConfig);
 
-		return io.ebean.EbeanServerFactory.create(config);
+		ebeanServer = io.ebean.EbeanServerFactory.create(config);
 	}
 
-	@Override
-	public Class<?> getObjectType() {
-		return EbeanServer.class;
-	}
-
-	@Override
-	public boolean isSingleton() {
-		return true;
+	public EbeanServer getEbeanServer() {
+		return ebeanServer;
 	}
 }

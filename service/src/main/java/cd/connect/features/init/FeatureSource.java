@@ -3,6 +3,7 @@ package cd.connect.features.init;
 import cd.connect.features.api.FeatureSourceStatus;
 import cd.connect.features.db.FeatureDb;
 import com.bluetrainsoftware.common.config.ConfigKey;
+import com.bluetrainsoftware.common.config.PreStart;
 import net.stickycode.stereotype.configured.PostConfigured;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class FeatureSource {
     this.featureDatabase = featureDatabase;
   }
 
-  @PostConfigured
+  @PreStart
   public void init() {
     if (enumSource.length() > 0) {
       loadEnumSource();
