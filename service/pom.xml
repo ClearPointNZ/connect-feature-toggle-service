@@ -150,7 +150,7 @@
 						  <artifactItems>
 							  <artifactItem>
 								  <groupId>cd.connect.features</groupId>
-								  <artifactId>connect-feature-api</artifactId>
+								  <artifactId>connect-feature-grpc-api</artifactId>
 								  <version>1.1-SNAPSHOT</version>
 								  <type>jar</type>
 								  <outputDirectory>${project.basedir}/target/protobuf</outputDirectory>
@@ -192,7 +192,7 @@
           <filtering>false</filtering>
           <tiles>
             <tile>cd.connect.tiles:tile-java:[1.1, 2)</tile>
-            <tile>cd.connect.tiles:tile-groovy:[1.1, 2)</tile>
+            <!--<tile>cd.connect.tiles:tile-groovy:[1.1, 2)</tile>-->
           </tiles>
         </configuration>
       </plugin>

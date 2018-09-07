@@ -12,6 +12,7 @@ message FeatureState {
     string name = 1;
     string whenEnabled = 2;
     bool locked = 3;
+	bool deleted = 4;
 }
 
 message FeatureName {
@@ -21,7 +22,17 @@ message FeatureName {
 // grpc does not allow nothing to be passed
 message Empty {}
 
-message Status {}
+message Result {
+	enum Status {
+		OK = 0;
+		NO_SUCH_FEATURE = 1;
+		ALREADY_ENABLED = 2;
+		ALREADY_LOCKED = 3;
+		CANNOT_DELETE = 4;
+	}
+
+	Status status = 1;
+}
 
 message FeatureCount {
     int32 count = 1;
@@ -30,15 +41,18 @@ message FeatureCount {
 service FeatureService {
     rpc all_features (Empty) returns (FeatureStates) {}
     rpc apply_all (FeatureStates) returns (FeatureStates) {}
-    rpc refresh (Empty) returns (Status) {}
+    rpc refresh (Empty) returns (Result) {}
     rpc feature_count (Empty) returns (FeatureCount) {}
     rpc enabled_count (Empty) returns (FeatureCount) {}
-    rpc enable_all (Empty) returns (Status) {}
-    rpc delete (FeatureName) returns (Status) {}
-    rpc enable (FeatureName) returns (Status) {}
-    rpc disable (FeatureName) returns (Status) {}
-    rpc lock (FeatureName) returns (Status) {}
-    rpc unlock (FeatureName) returns (Status) {}
+    rpc enable_all (Empty) returns (Result) {}
+    rpc delete (FeatureName) returns (Result) {}
+    rpc enable (FeatureName) returns (Result) {}
+    rpc disable (FeatureName) returns (Result) {}
+    rpc lock (FeatureName) returns (Result) {}
+    rpc unlock (FeatureName) returns (Result) {}
+
+	// adds a streaming subscriber and then pushes all current states down the line to this
+	// watcher. All that is required to listen for updates is to implement this.
     rpc watch (Empty) returns (stream FeatureState) {}
 }
 

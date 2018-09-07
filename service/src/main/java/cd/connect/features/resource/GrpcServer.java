@@ -30,7 +30,8 @@ public class GrpcServer {
   public void init() throws IOException {
     log.info("starting grpc server on port {}", port);
 
-    server = ServerBuilder.forPort(port).addService(featureRpcResource).build().start();
+    server = ServerBuilder.forPort(port)
+	    .addService(featureRpcResource).build().start();
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       log.info("Shutting down grpc server on port {}" + port);
