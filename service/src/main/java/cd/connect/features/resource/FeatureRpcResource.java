@@ -16,10 +16,16 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static cd.connect.features.grpc.FeatureStateService.*;
 
 /**
+ * There seems little point in the gRPC version now given you cannot have a continually open
+ * stream like you can with web-sockets.
+ *
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
  */
 public class FeatureRpcResource extends FeatureServiceGrpc.FeatureServiceImplBase {
@@ -70,15 +76,20 @@ public class FeatureRpcResource extends FeatureServiceGrpc.FeatureServiceImplBas
 
   @Override
   public void allFeatures(Empty request, StreamObserver<FeatureStates> resp) {
-	  FeatureStates.Builder fsBuilder = FeatureStates.newBuilder();
-	  featureDb.getFeatures().forEach((name, fs) -> {
-	  	log.info("feature is {}", fs);
-	  	fsBuilder.addStates(fromFeatureState(fs));
-	  });
-	  resp.onNext(fsBuilder.build());
+	  resp.onNext(getAllFeatures());
+	  resp.onCompleted();
   }
 
-  @Override
+	private FeatureStates getAllFeatures() {
+		FeatureStates.Builder fsBuilder = FeatureStates.newBuilder();
+		featureDb.getFeatures().forEach((name, fs) -> {
+			log.info("feature is {}", fs);
+			fsBuilder.addStates(fromFeatureState(fs));
+		});
+		return fsBuilder.build();
+	}
+
+	@Override
   public void applyAll(FeatureStates request, StreamObserver<FeatureStates> resp) {
 	  FeatureStates.Builder fsBuilder = FeatureStates.newBuilder();
 
@@ -88,23 +99,27 @@ public class FeatureRpcResource extends FeatureServiceGrpc.FeatureServiceImplBas
 	  });
 
   	resp.onNext(fsBuilder.build());
+	  resp.onCompleted();
   }
 
   @Override
   public void refresh(Empty request, StreamObserver<Result> resp) {
     featureDb.refresh();
     resp.onNext(Result.newBuilder().build());
+	  resp.onCompleted();
   }
 
   @Override
   public void featureCount(Empty request, StreamObserver<FeatureCount> resp) {
 	  resp.onNext(FeatureCount.newBuilder().setCount(featureDb.getFeatures().size()).build());
+	  resp.onCompleted();
   }
 
   @Override
   public void enabledCount(Empty request, StreamObserver<FeatureCount> resp) {
   	long count = featureDb.getFeatures().values().stream().filter(FeatureState::isEnabled).count();
     resp.onNext(FeatureCount.newBuilder().setCount((int)count).build());
+	  resp.onCompleted();
   }
 
   @Override
@@ -122,11 +137,13 @@ public class FeatureRpcResource extends FeatureServiceGrpc.FeatureServiceImplBas
 	  });
 
 	  resp.onNext(status.build());
+	  resp.onCompleted();
   }
 
   @Override
   public void delete(FeatureName request, StreamObserver<Result> resp) {
 	  resp.onNext(Result.newBuilder().setStatus(Result.Status.CANNOT_DELETE).build());
+	  resp.onCompleted();
   }
 
   @Override
@@ -140,7 +157,11 @@ public class FeatureRpcResource extends FeatureServiceGrpc.FeatureServiceImplBas
 			  log.warn("Enabled failed", e);
 			  resp.onNext(Result.newBuilder().setStatus(Result.Status.ALREADY_LOCKED).build());
 		  }
+	  } else {
+	  	resp.onNext(Result.newBuilder().setStatus(Result.Status.UNRECOGNIZED).build());
 	  }
+
+	  resp.onCompleted();
   }
 
   @Override
@@ -154,7 +175,11 @@ public class FeatureRpcResource extends FeatureServiceGrpc.FeatureServiceImplBas
 			  log.warn("Disabled failed", e);
 			  resp.onNext(Result.newBuilder().setStatus(Result.Status.ALREADY_LOCKED).build());
 		  }
+	  } else {
+		  resp.onNext(Result.newBuilder().setStatus(Result.Status.UNRECOGNIZED).build());
 	  }
+
+	  resp.onCompleted();
   }
 
   @Override
@@ -168,7 +193,11 @@ public class FeatureRpcResource extends FeatureServiceGrpc.FeatureServiceImplBas
 			  log.warn("Lock failed", e);
 			  resp.onNext(Result.newBuilder().setStatus(Result.Status.ALREADY_ENABLED).build());
 		  }
+	  } else {
+		  resp.onNext(Result.newBuilder().setStatus(Result.Status.UNRECOGNIZED).build());
 	  }
+
+	  resp.onCompleted();
   }
 
   @Override
@@ -182,35 +211,11 @@ public class FeatureRpcResource extends FeatureServiceGrpc.FeatureServiceImplBas
 			  log.warn("Unlock failed", e);
 			  resp.onNext(Result.newBuilder().setStatus(Result.Status.ALREADY_ENABLED).build());
 		  }
+	  } else {
+		  resp.onNext(Result.newBuilder().setStatus(Result.Status.UNRECOGNIZED).build());
 	  }
+
+	  resp.onCompleted();
   }
 
-  @Override
-  public void watch(Empty request, StreamObserver<FeatureStateService.FeatureState> resp) {
-	  featureDb.getFeatures().forEach((name, fs) -> {
-		  FeatureStateService.FeatureState.Builder builder = FeatureStateService.FeatureState.newBuilder()
-			  .setLocked(fs.isLocked())
-			  .setName(name)
-			  .setDeleted(false);
-
-		  if (fs.getWhenEnabled() != null) {
-		  	builder.setWhenEnabled(localDateTimeToString(fs.getWhenEnabled()));
-		  }
-
-		  resp.onNext(builder.build());
-	  });
-
-    featureDb.watch(ws -> {
-    	try {
-		    resp.onNext(FeatureStateService.FeatureState.newBuilder()
-			    .setLocked(ws.getState().isLocked())
-			    .setName(ws.getName())
-			    .setWhenEnabled(ws.getState().getWhenEnabled().toString())
-			    .setDeleted(ws.isDeleted())
-			    .build());
-	    } catch (Throwable t) {
-    		log.debug("Failed to send response on watch");
-	    }
-    });
-  }
 }

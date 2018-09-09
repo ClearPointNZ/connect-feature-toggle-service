@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 /**
@@ -32,10 +34,63 @@ public class FeatureDbMySql implements FeatureDb {
 
 	private final EbeanHolder ebeanHolder;
   private final List<Consumer<WatchSignal>> inflightWatchers = new ArrayList<>();
+  private final ExecutorService watchPool = Executors.newCachedThreadPool();
 
 	@Inject
   public FeatureDbMySql(EbeanHolder ebeanServer) {
     this.ebeanHolder = ebeanServer;
+  }
+
+  @PostConfigured
+  public void initPolling() {
+	  if (refreshPeriod > 0) {
+      watchPool.submit(this::waitAndTriggerPoll);
+      
+	    Runtime.getRuntime().addShutdownHook(new Thread(watchPool::shutdown));
+    }
+  }
+
+  protected void pollForUpdates() {
+	  log.debug("polling for updates...");
+
+    Map<String, SqlFeatureState> newStates = new HashMap<>(states);
+
+    ebeanHolder.getEbeanServer().find(SqlFeatureState.class).findEach(fs -> {
+      SqlFeatureState existing = newStates.get(fs.getName());
+
+      if (existing == null || !existing.equals(fs)) { // new one
+        signalWatchers(new WatchSignal(fs.getName(), fs.toFeatureState(), false));
+        states.put(fs.getName(), fs); // add it in
+      }
+
+      newStates.remove(fs.getName());
+    });
+
+    newStates.keySet().forEach(deletedKeys -> {
+      signalWatchers(new WatchSignal(deletedKeys, newStates.get(deletedKeys).toFeatureState(), true));
+      states.remove(deletedKeys);
+    });
+
+    waitAndTriggerPoll();
+  }
+
+  private void waitAndTriggerPoll() {
+    try {
+      Thread.sleep(refreshPeriod * 1000);
+      watchPool.submit(this::pollForUpdates); // put ourselves back in the running.
+    } catch (InterruptedException e) {
+      log.warn("Stopping polling as thread was interrupted.");
+    }
+  }
+
+  private void signalWatchers(WatchSignal watchSignal) {
+    log.debug("signaling a change in {}", watchSignal);
+    
+    inflightWatchers.forEach(c -> {
+      watchPool.submit(() -> {
+        c.accept(watchSignal);
+      });
+    });
   }
 
   @Override
@@ -43,7 +98,7 @@ public class FeatureDbMySql implements FeatureDb {
 	public void ensureExists(Map<String, FeatureSourceStatus> features) {
 	  EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
 
-    features.entrySet().stream().forEach((entry) -> {
+    features.entrySet().forEach((entry) -> {
       SqlFeatureState featureState = ebeanServer.find(SqlFeatureState.class, entry.getKey());
 
       if (featureState == null) {
@@ -70,10 +125,21 @@ public class FeatureDbMySql implements FeatureDb {
 
 	@Override
 	public void watch(Consumer<WatchSignal> changed) {
+	  if (inflightWatchers.size() == 0) {
+	    loadStateForWatchers();
+    }
+
     inflightWatchers.add(changed);
 	}
 
-	@Override
+	private Map<String, SqlFeatureState> states = new HashMap<>();
+
+  private void loadStateForWatchers() {
+    ebeanHolder.getEbeanServer().find(SqlFeatureState.class).findEach(fs -> states.put(fs.getName(), fs));
+  }
+
+
+  @Override
 	public Map<String, FeatureState> getFeatures() {
     EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
 

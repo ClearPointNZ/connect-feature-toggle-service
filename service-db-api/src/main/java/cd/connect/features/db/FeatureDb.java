@@ -68,5 +68,14 @@ public interface FeatureDb {
     public boolean isDeleted() {
       return deleted;
     }
+
+    @Override
+    public String toString() {
+      return "WatchSignal{" +
+        "name='" + name + '\'' +
+        ", state=" + state +
+        ", deleted=" + deleted +
+        '}';
+    }
   }
 }

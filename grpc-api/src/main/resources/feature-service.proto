@@ -50,9 +50,5 @@ service FeatureService {
     rpc disable (FeatureName) returns (Result) {}
     rpc lock (FeatureName) returns (Result) {}
     rpc unlock (FeatureName) returns (Result) {}
-
-	// adds a streaming subscriber and then pushes all current states down the line to this
-	// watcher. All that is required to listen for updates is to implement this.
-    rpc watch (Empty) returns (stream FeatureState) {}
 }
 
