@@ -13,29 +13,26 @@ import java.io.IOException;
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
  */
 public class GrpcServer {
-  private static final Logger log = LoggerFactory.getLogger(GrpcServer.class);
+	private static final Logger log = LoggerFactory.getLogger(GrpcServer.class);
+	private final FeatureRpcResource featureRpcResource;
+	@ConfigKey("grpc.port")
+	Integer port = 2865;
+	private Server server;
 
-  @ConfigKey("grpc.port")
-  Integer port = 2865;
+	public GrpcServer(FeatureRpcResource featureRpcResource) {
+		this.featureRpcResource = featureRpcResource;
+	}
 
-  private Server server;
+	@PostConfigured
+	public void init() throws IOException {
+		log.info("starting grpc server on port {}", port);
 
-  private final FeatureRpcResource featureRpcResource;
+		server = ServerBuilder.forPort(port)
+			.addService(featureRpcResource).build().start();
 
-  public GrpcServer(FeatureRpcResource featureRpcResource) {
-    this.featureRpcResource = featureRpcResource;
-  }
-
-  @PostConfigured
-  public void init() throws IOException {
-    log.info("starting grpc server on port {}", port);
-
-    server = ServerBuilder.forPort(port)
-	    .addService(featureRpcResource).build().start();
-
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      log.info("Shutting down grpc server on port {}" + port);
-      server.shutdown();
-    }));
-  }
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			log.info("Shutting down grpc server on port {}" + port);
+			server.shutdown();
+		}));
+	}
 }

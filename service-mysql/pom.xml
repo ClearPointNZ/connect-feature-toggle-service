@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>cd.connect.features</groupId>
+	<groupId>cd.connect.features</groupId>
 	<artifactId>connect-feature-service-mysql</artifactId>
 	<version>1.1-SNAPSHOT</version>
 	<name>feature-service-mysql</name>
@@ -35,90 +36,90 @@
 		<tag>HEAD</tag>
 	</scm>
 
-  <dependencies>
-	  <dependency>
-		  <groupId>cd.connect.features</groupId>
-		  <artifactId>connect-feature-service-sql</artifactId>
-		  <version>1.1-SNAPSHOT</version>
-	  </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>cd.connect.features</groupId>
+			<artifactId>connect-feature-service-sql</artifactId>
+			<version>1.1-SNAPSHOT</version>
+		</dependency>
 
-	  <!-- provided, we don't dictate these versions or combinations -->
-	  <dependency>
-		  <groupId>cd.connect.composites.java</groupId>
-		  <artifactId>connect-composite-springwebapp</artifactId>
-		  <version>[1.1,2)</version>
-		  <scope>provided</scope>
-	  </dependency>
+		<!-- provided, we don't dictate these versions or combinations -->
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-springwebapp</artifactId>
+			<version>[1.1,2)</version>
+			<scope>provided</scope>
+		</dependency>
 
-	  <dependency>
-		  <groupId>cd.connect.composites.java</groupId>
-		  <artifactId>connect-composite-jersey</artifactId>
-		  <version>[1.1, 2)</version>
-		  <scope>provided</scope>
-	  </dependency>
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-jersey</artifactId>
+			<version>[1.1, 2)</version>
+			<scope>provided</scope>
+		</dependency>
 
-	  <dependency>
-		  <groupId>cd.connect.composites.java</groupId>
-		  <artifactId>connect-composite-prometheus</artifactId>
-		  <version>[1.1,2)</version>
-		  <scope>provided</scope>
-	  </dependency>
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-prometheus</artifactId>
+			<version>[1.1,2)</version>
+			<scope>provided</scope>
+		</dependency>
 
-	  <dependency>
-		  <groupId>cd.connect.composites.java</groupId>
-		  <artifactId>connect-composite-log4j2</artifactId>
-		  <version>[1.1, 2)</version>
-	  </dependency>
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-log4j2</artifactId>
+			<version>[1.1, 2)</version>
+		</dependency>
 
-	  <dependency>
-		  <groupId>org.slf4j</groupId>
-		  <artifactId>jcl-over-slf4j</artifactId>
-		  <version>1.7.25</version>
-	  </dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>1.7.25</version>
+		</dependency>
 
-	  <dependency>
-		  <groupId>org.slf4j</groupId>
-		  <artifactId>jul-to-slf4j</artifactId>
-		  <version>1.7.25</version>
-	  </dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<version>1.7.25</version>
+		</dependency>
 
-	  <dependency>
-		  <groupId>mysql</groupId>
-		  <artifactId>mysql-connector-java</artifactId>
-		  <version>5.1.42</version>
-	  </dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.42</version>
+		</dependency>
 
-	  <!-- testing -->
-	  <dependency>
-		  <groupId>cd.connect.composites.java</groupId>
-		  <artifactId>connect-composite-test</artifactId>
-		  <version>[1.1, 2)</version>
-		  <scope>test</scope>
-	  </dependency>
+		<!-- testing -->
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-test</artifactId>
+			<version>[1.1, 2)</version>
+			<scope>test</scope>
+		</dependency>
 
-	  <dependency>
-		  <groupId>com.h2database</groupId>
-		  <artifactId>h2</artifactId>
-		  <version>1.4.191</version>
-		  <scope>test</scope>
-	  </dependency>
-  </dependencies>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.191</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
-  <build>
-	  <plugins>
-      <plugin>
-        <groupId>io.repaint.maven</groupId>
-        <artifactId>tiles-maven-plugin</artifactId>
-        <version>2.10</version>
-        <extensions>true</extensions>
-        <configuration>
-          <filtering>false</filtering>
-          <tiles>
-	          <tile>io.ebean.tile:enhancement:5.6</tile>
-            <tile>cd.connect.tiles:tile-java:[1.1, 2)</tile>
-          </tiles>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.repaint.maven</groupId>
+				<artifactId>tiles-maven-plugin</artifactId>
+				<version>2.10</version>
+				<extensions>true</extensions>
+				<configuration>
+					<filtering>false</filtering>
+					<tiles>
+						<tile>io.ebean.tile:enhancement:5.6</tile>
+						<tile>cd.connect.tiles:tile-java:[1.1, 2)</tile>
+					</tiles>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

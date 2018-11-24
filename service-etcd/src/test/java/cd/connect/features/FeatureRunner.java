@@ -4,7 +4,6 @@ import bathe.BatheBooter;
 import cd.connect.war.WebAppRunner;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 /**

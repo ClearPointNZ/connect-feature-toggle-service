@@ -21,6 +21,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({FeatureSource.class, JerseyModule.class, GrpcServer.class,
-	FeatureStateChangeService.class, FeatureRpcResource.class, FeatureDbMySql.class, EbeanHolder.class})
+  FeatureStateChangeService.class, FeatureRpcResource.class, FeatureDbMySql.class, EbeanHolder.class})
 public @interface EnableMysqlToggleServer {
 }

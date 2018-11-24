@@ -12,42 +12,41 @@ import org.avaje.datasource.DataSourceConfig;
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
  */
 public class EbeanHolder {
-	private EbeanServer ebeanServer;
-	
-	@ConfigKey("db.url")
-	String dbUrl;
-	@ConfigKey("db.driver")
-	String dbDriver = "";
-	@ConfigKey("db.password")
-	String dbPassword;
-	@ConfigKey("db.username")
-	String dbUsername;
-	@ConfigKey("db.max-connections")
-	Integer maxConnections = 3;
+  @ConfigKey("db.url")
+  String dbUrl;
+  @ConfigKey("db.driver")
+  String dbDriver = "";
+  @ConfigKey("db.password")
+  String dbPassword;
+  @ConfigKey("db.username")
+  String dbUsername;
+  @ConfigKey("db.max-connections")
+  Integer maxConnections = 3;
+  private EbeanServer ebeanServer;
 
-	@PostConfigured
-	public void init() {
-		ServerConfig config = new ServerConfig();
+  @PostConfigured
+  public void init() {
+    ServerConfig config = new ServerConfig();
 
-		DataSourceConfig dsConfig = new DataSourceConfig();
+    DataSourceConfig dsConfig = new DataSourceConfig();
 
-		dsConfig.setUrl(dbUrl);
-		dsConfig.setUsername(dbUsername);
-		dsConfig.setPassword(dbPassword);
-		dsConfig.setDriver(dbDriver);
-		dsConfig.setMaxConnections(maxConnections);
+    dsConfig.setUrl(dbUrl);
+    dsConfig.setUsername(dbUsername);
+    dsConfig.setPassword(dbPassword);
+    dsConfig.setDriver(dbDriver);
+    dsConfig.setMaxConnections(maxConnections);
 
-		config.setDataSourceConfig(dsConfig);
+    config.setDataSourceConfig(dsConfig);
 
-		DbMigrationConfig migrationConfig = new DbMigrationConfig();
-		migrationConfig.setPlatform(Platform.MYSQL);
-		migrationConfig.setRunMigration(true);
-		config.setMigrationConfig(migrationConfig);
+    DbMigrationConfig migrationConfig = new DbMigrationConfig();
+    migrationConfig.setPlatform(Platform.MYSQL);
+    migrationConfig.setRunMigration(true);
+    config.setMigrationConfig(migrationConfig);
 
-		ebeanServer = io.ebean.EbeanServerFactory.create(config);
-	}
+    ebeanServer = io.ebean.EbeanServerFactory.create(config);
+  }
 
-	public EbeanServer getEbeanServer() {
-		return ebeanServer;
-	}
+  public EbeanServer getEbeanServer() {
+    return ebeanServer;
+  }
 }

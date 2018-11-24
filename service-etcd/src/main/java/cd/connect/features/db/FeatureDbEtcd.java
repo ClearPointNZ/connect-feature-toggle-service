@@ -1,7 +1,7 @@
 package cd.connect.features.db;
 
-import cd.connect.features.api.FeatureState;
 import cd.connect.features.api.FeatureSourceStatus;
+import cd.connect.features.api.FeatureState;
 import cd.connect.jackson.JacksonObjectProvider;
 import com.bluetrainsoftware.common.config.ConfigKey;
 import com.coreos.jetcd.Client;
@@ -44,33 +44,29 @@ import java.util.function.Consumer;
  */
 public class FeatureDbEtcd implements FeatureDb {
   private static final Logger log = LoggerFactory.getLogger(FeatureDbEtcd.class);
-
+  private final static TypeReference<Set<String>> STRING_SET = new TypeReference<Set<String>>() {
+  };
+  private final ObjectMapper mapper = JacksonObjectProvider.mapper;
+  private final Map<String, FeatureState> states = new ConcurrentHashMap<>();
+  private final ExecutorService watchPool = Executors.newCachedThreadPool();
+  private final Set<Consumer<WatchSignal>> signalListener;
+  private final List<Watch.Watcher> inflightWatchers = new ArrayList<>();
   @ConfigKey("feature-service.etcd.url")
   String connectionUrl = "http://localhost:2379";
   @ConfigKey("feature-service.etcd.offset")
   String offset = "/connect-cd/features";
   @ConfigKey("feature-service.etcd.enabled")
   Boolean enabled = Boolean.FALSE;
-
   private KV kvClient;
   private Client etcdClient;
   private Watch watchClient;
 
-  private final ObjectMapper mapper = JacksonObjectProvider.mapper;
-
-  private final static TypeReference<Set<String>> STRING_SET = new TypeReference<Set<String>>() {};
-
-  private final Map<String, FeatureState> states = new ConcurrentHashMap<>();
-  private final ExecutorService watchPool = Executors.newCachedThreadPool();
-  private final Set<Consumer<WatchSignal>> signalListener;
-  private final List<Watch.Watcher> inflightWatchers = new ArrayList<>();
-
   @Inject
-	public FeatureDbEtcd(Set<Consumer<WatchSignal>> signalListener) {
-		this.signalListener = signalListener;
-	}
+  public FeatureDbEtcd(Set<Consumer<WatchSignal>> signalListener) {
+    this.signalListener = signalListener;
+  }
 
-	@PostConfigured
+  @PostConfigured
   public void init() {
     if (enabled && etcdClient == null) {
       etcdClient = Client.builder().endpoints(connectionUrl).build();
@@ -87,17 +83,17 @@ public class FeatureDbEtcd implements FeatureDb {
   }
 
   public String fnOffset(String name) {
-  	return offset + "/" + name;
+    return offset + "/" + name;
   }
 
   /**
    * Check to see if the key contains the features we have just been passed, and if so, remove them.
-   *
+   * <p>
    * If we try and remove a feature that doesn't exist, then we have to re-write the list of features, but
    * we want to do that after we have written the key updates.
    *
    * @param foundFeatures - the whole list of features, found ones removed
-   * @param features - the json array of feature names (not statuses)
+   * @param features      - the json array of feature names (not statuses)
    * @return - whether we should update the list of features
    */
   private boolean determineNewFeatures(Map<String, FeatureSourceStatus> foundFeatures, String features) {
@@ -106,10 +102,10 @@ public class FeatureDbEtcd implements FeatureDb {
     log.info("looking for existing features (some exist)");
 
     Set<String> featuresNames = featureNamesFromJson(features);
-    for(String fn : featuresNames) {
-    	// this loads the feature name in so that it can be deleted out and notified of deletion later if it changes
-	    // - this is done in loadFeatures() - first up it issues a delete for all features it doesn't now know about
-    	states.put(fn, new FeatureState());
+    for (String fn : featuresNames) {
+      // this loads the feature name in so that it can be deleted out and notified of deletion later if it changes
+      // - this is done in loadFeatures() - first up it issues a delete for all features it doesn't now know about
+      states.put(fn, new FeatureState());
 
       FeatureSourceStatus removeFeature = foundFeatures.remove(fn);
       if (removeFeature == null) {
@@ -130,11 +126,11 @@ public class FeatureDbEtcd implements FeatureDb {
 
 
   protected CompletableFuture<GetResponse> kvGet(String key) {
-  	return kvClient.get(new ByteSequence(key));
+    return kvClient.get(new ByteSequence(key));
   }
 
   protected CompletableFuture<PutResponse> kvPut(String key, String value) {
-  	return kvClient.put(new ByteSequence(key), new ByteSequence(value));
+    return kvClient.put(new ByteSequence(key), new ByteSequence(value));
   }
 
   @Override
@@ -160,7 +156,7 @@ public class FeatureDbEtcd implements FeatureDb {
 
         return resp;
       }).get();
-    } catch (InterruptedException|ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       log.error("Failed to ensure features exist", e);
       throw new RuntimeException(e);
     }
@@ -172,24 +168,24 @@ public class FeatureDbEtcd implements FeatureDb {
     watchForFeatureChanges(features.keySet());
   }
 
-	protected void watchForFeatureNameChanges() {
-		watchPool.submit(this::watchFeatureNamesChange);
-	}
+  protected void watchForFeatureNameChanges() {
+    watchPool.submit(this::watchFeatureNamesChange);
+  }
 
-	protected void watchForFeatureChanges(Set<String> featureNames) {
+  protected void watchForFeatureChanges(Set<String> featureNames) {
 
-		// now kill any and all feature watchers
-		inflightWatchers.forEach(Watch.Watcher::close);
+    // now kill any and all feature watchers
+    inflightWatchers.forEach(Watch.Watcher::close);
 
-		// now go and watch all of the features again
-		featureNames.forEach(fn -> {
-			watchPool.submit(() -> {
-				watchFeatureStateChange(fn);
-			});
-		});
-	}
+    // now go and watch all of the features again
+    featureNames.forEach(fn -> {
+      watchPool.submit(() -> {
+        watchFeatureStateChange(fn);
+      });
+    });
+  }
 
-	private Set<String> featureNamesFromJson(String features) {
+  private Set<String> featureNamesFromJson(String features) {
     try {
       return mapper.readValue(features, STRING_SET);
     } catch (IOException e) {
@@ -208,20 +204,20 @@ public class FeatureDbEtcd implements FeatureDb {
   }
 
   private String featureStateToJson(FeatureState featureState) {
-	  try {
-		  return mapper.writeValueAsString(featureState);
-	  } catch (JsonProcessingException e) {
-		  log.error("Cannot encode feature state `{}`", featureState.toString(), e);
-		  throw new RuntimeException("Unable to encode feature to json", e);
-	  }
+    try {
+      return mapper.writeValueAsString(featureState);
+    } catch (JsonProcessingException e) {
+      log.error("Cannot encode feature state `{}`", featureState.toString(), e);
+      throw new RuntimeException("Unable to encode feature to json", e);
+    }
   }
 
-	/**
-	 * Sends a signal for states that we are storing but have been removed, and then
-	 * (expecting featureNames to be all current features) notifies of the state of all new features.
-	 *
-	 * @param featureNames
-	 */
+  /**
+   * Sends a signal for states that we are storing but have been removed, and then
+   * (expecting featureNames to be all current features) notifies of the state of all new features.
+   *
+   * @param featureNames
+   */
   protected void loadFeatures(Set<String> featureNames) {
     log.info("loading features base on feature set");
     // deal with the now deleted states
@@ -241,28 +237,28 @@ public class FeatureDbEtcd implements FeatureDb {
     // is state for these newly minted feature states before we get the notification that these have changed.
     // so we are all good with getting their state
 
-	  // if this is our first time (i.e. we just started) then this will load all states and notify them. For each
-	  // loaded state it stores it in "states". clients should not call "getFeatures" as they may not all be loaded.
+    // if this is our first time (i.e. we just started) then this will load all states and notify them. For each
+    // loaded state it stores it in "states". clients should not call "getFeatures" as they may not all be loaded.
 
     featureNames.forEach(fn -> {
-    	if (states.get(fn) == null) {
-		    kvGet(fnOffset(fn)).thenApply(resp -> {
-			    if (!resp.getKvs().isEmpty()) {
-				    loadAndSignalFeatureStateChange(fn, resp.getKvs().get(0).getValue().toStringUtf8());
-			    }
+      if (states.get(fn) == null) {
+        kvGet(fnOffset(fn)).thenApply(resp -> {
+          if (!resp.getKvs().isEmpty()) {
+            loadAndSignalFeatureStateChange(fn, resp.getKvs().get(0).getValue().toStringUtf8());
+          }
 
-			    return resp;
-		    });
-	    }
+          return resp;
+        });
+      }
     });
 
   }
 
   private void loadFeatures(String value) {
-	  Set<String> featureNames = featureNamesFromJson(value);
+    Set<String> featureNames = featureNamesFromJson(value);
 
-	  loadFeatures(featureNames);
-	  watchForFeatureChanges(featureNames);
+    loadFeatures(featureNames);
+    watchForFeatureChanges(featureNames);
   }
 
   /**
@@ -358,7 +354,7 @@ public class FeatureDbEtcd implements FeatureDb {
     try {
       return mapper.writeValueAsString(new FeatureState(name,
         status == FeatureSourceStatus.ENABLED ? LocalDateTime.now() : null,
-        status == FeatureSourceStatus.LOCKED ));
+        status == FeatureSourceStatus.LOCKED));
     } catch (JsonProcessingException e) {
       log.error("Failed to create locked feature", e);
       throw new RuntimeException(e);
@@ -387,7 +383,7 @@ public class FeatureDbEtcd implements FeatureDb {
 
   @Override
   public void watch(Consumer<WatchSignal> changed) {
-	  signalListener.add(changed);
+    signalListener.add(changed);
   }
 
   @Override
@@ -407,9 +403,9 @@ public class FeatureDbEtcd implements FeatureDb {
     // no-op - etcd is watched
   }
 
-	@Override
-	public void apply(FeatureState featureState) {
-  	log.debug("applying feature state: {}", featureState.toString());
-  	kvPut(fnOffset(featureState.getName()), featureStateToJson(featureState));
-	}
+  @Override
+  public void apply(FeatureState featureState) {
+    log.debug("applying feature state: {}", featureState.toString());
+    kvPut(fnOffset(featureState.getName()), featureStateToJson(featureState));
+  }
 }

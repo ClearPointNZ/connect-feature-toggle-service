@@ -1,7 +1,6 @@
 package cd.connect.features.api;
 
 /**
- *
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
  */
 public enum FeatureSourceStatus {

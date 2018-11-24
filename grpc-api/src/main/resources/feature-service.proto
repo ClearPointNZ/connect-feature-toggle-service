@@ -5,22 +5,23 @@ option java_package = "cd.connect.features.grpc";
 option java_outer_classname = "FeatureStateService";
 
 message FeatureStates {
-    repeated FeatureState states = 1;
+	repeated FeatureState states = 1;
 }
 
 message FeatureState {
-    string name = 1;
-    string whenEnabled = 2;
-    bool locked = 3;
+	string name = 1;
+	string whenEnabled = 2;
+	bool locked = 3;
 	bool deleted = 4;
 }
 
 message FeatureName {
-    string name = 1;
+	string name = 1;
 }
 
 // grpc does not allow nothing to be passed
-message Empty {}
+message Empty {
+}
 
 message Result {
 	enum Status {
@@ -35,20 +36,31 @@ message Result {
 }
 
 message FeatureCount {
-    int32 count = 1;
+	int32 count = 1;
 }
 
 service FeatureService {
-    rpc all_features (Empty) returns (FeatureStates) {}
-    rpc apply_all (FeatureStates) returns (FeatureStates) {}
-    rpc refresh (Empty) returns (Result) {}
-    rpc feature_count (Empty) returns (FeatureCount) {}
-    rpc enabled_count (Empty) returns (FeatureCount) {}
-    rpc enable_all (Empty) returns (Result) {}
-    rpc delete (FeatureName) returns (Result) {}
-    rpc enable (FeatureName) returns (Result) {}
-    rpc disable (FeatureName) returns (Result) {}
-    rpc lock (FeatureName) returns (Result) {}
-    rpc unlock (FeatureName) returns (Result) {}
+	rpc all_features (Empty) returns (FeatureStates) {
+	}
+	rpc apply_all (FeatureStates) returns (FeatureStates) {
+	}
+	rpc refresh (Empty) returns (Result) {
+	}
+	rpc feature_count (Empty) returns (FeatureCount) {
+	}
+	rpc enabled_count (Empty) returns (FeatureCount) {
+	}
+	rpc enable_all (Empty) returns (Result) {
+	}
+	rpc delete (FeatureName) returns (Result) {
+	}
+	rpc enable (FeatureName) returns (Result) {
+	}
+	rpc disable (FeatureName) returns (Result) {
+	}
+	rpc lock (FeatureName) returns (Result) {
+	}
+	rpc unlock (FeatureName) returns (Result) {
+	}
 }
 

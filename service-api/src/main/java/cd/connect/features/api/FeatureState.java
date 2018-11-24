@@ -28,7 +28,7 @@ public class FeatureState implements Comparable<FeatureState> {
 
   private boolean locked;
 
-  public FeatureState(String name,  LocalDateTime whenEnabled, boolean locked) {
+  public FeatureState(String name, LocalDateTime whenEnabled, boolean locked) {
     this.name = name;
     this.whenEnabled = whenEnabled;
     this.locked = locked;
@@ -42,20 +42,20 @@ public class FeatureState implements Comparable<FeatureState> {
     this(copy.name, copy.whenEnabled, copy.locked);
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public LocalDateTime getWhenEnabled() {
+    return whenEnabled;
   }
 
   public void setWhenEnabled(LocalDateTime whenEnabled) {
     this.whenEnabled = whenEnabled;
   }
 
-  public LocalDateTime getWhenEnabled() {
-    return whenEnabled;
-  }
-
   public String getName() {
     return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   @JsonIgnore
@@ -76,12 +76,12 @@ public class FeatureState implements Comparable<FeatureState> {
     return this.name.compareTo(other.name);
   }
 
-	@Override
-	public String toString() {
-		return "FeatureState{" +
-			"name='" + name + '\'' +
-			", whenEnabled=" + whenEnabled +
-			", locked=" + locked +
-			'}';
-	}
+  @Override
+  public String toString() {
+    return "FeatureState{" +
+      "name='" + name + '\'' +
+      ", whenEnabled=" + whenEnabled +
+      ", locked=" + locked +
+      '}';
+  }
 }

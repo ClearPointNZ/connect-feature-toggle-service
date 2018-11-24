@@ -13,84 +13,84 @@ import java.util.List;
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
  */
 public class FeatureStateChangeService {
-  private final FeatureDb featureDb;
+	private final FeatureDb featureDb;
 
-  public FeatureStateChangeService(FeatureDb featureDb) {
-    this.featureDb = featureDb;
-  }
+	public FeatureStateChangeService(FeatureDb featureDb) {
+		this.featureDb = featureDb;
+	}
 
-  public void enable(FeatureState fs) throws BadStateException {
-    if (fs.isLocked()) {
-      throw new BadStateException(String.format("state `%s` is locked, it cannot be enabled.", fs.getName()));
-    }
+	public void enable(FeatureState fs) throws BadStateException {
+		if (fs.isLocked()) {
+			throw new BadStateException(String.format("state `%s` is locked, it cannot be enabled.", fs.getName()));
+		}
 
-    if (fs.getWhenEnabled() == null) {
-      fs.setWhenEnabled(LocalDateTime.now());
-      featureDb.apply(fs);
-    }
-  }
+		if (fs.getWhenEnabled() == null) {
+			fs.setWhenEnabled(LocalDateTime.now());
+			featureDb.apply(fs);
+		}
+	}
 
-  public void disable(FeatureState fs) throws BadStateException {
-    if (fs.isLocked()) {
-      throw new BadStateException(String.format("state `%s` is locked, it cannot be disabled.", fs.getName()));
-    }
+	public void disable(FeatureState fs) throws BadStateException {
+		if (fs.isLocked()) {
+			throw new BadStateException(String.format("state `%s` is locked, it cannot be disabled.", fs.getName()));
+		}
 
-    if (fs.getWhenEnabled() != null) {
-      fs.setWhenEnabled(null);
-      featureDb.apply(fs);
-    }
-  }
+		if (fs.getWhenEnabled() != null) {
+			fs.setWhenEnabled(null);
+			featureDb.apply(fs);
+		}
+	}
 
-  public void lock(FeatureState fs) throws BadStateException {
-    if (fs.getWhenEnabled() != null) {
-      throw new BadStateException(String.format("state `%s` is enabled, it cannot be locked.", fs.getName()));
-    }
+	public void lock(FeatureState fs) throws BadStateException {
+		if (fs.getWhenEnabled() != null) {
+			throw new BadStateException(String.format("state `%s` is enabled, it cannot be locked.", fs.getName()));
+		}
 
-    if (!fs.isLocked()) {
-      fs.setLocked(true);
-      featureDb.apply(fs);
-    }
-  }
+		if (!fs.isLocked()) {
+			fs.setLocked(true);
+			featureDb.apply(fs);
+		}
+	}
 
-  public void unlock(FeatureState fs) throws BadStateException {
-    if (fs.getWhenEnabled() != null) {
-      throw new BadStateException(String.format("state `%s` is enabled, it cannot be locked.", fs.getName()));
-    }
+	public void unlock(FeatureState fs) throws BadStateException {
+		if (fs.getWhenEnabled() != null) {
+			throw new BadStateException(String.format("state `%s` is enabled, it cannot be locked.", fs.getName()));
+		}
 
-    if (fs.isLocked()) {
-      fs.setLocked(false);
-      featureDb.apply(fs);
-    }
-  }
+		if (fs.isLocked()) {
+			fs.setLocked(false);
+			featureDb.apply(fs);
+		}
+	}
 
-  public List<String> enableAll(LocalDateTime when) {
-    List<String> unlockedNowEnabled = new ArrayList<>();
+	public List<String> enableAll(LocalDateTime when) {
+		List<String> unlockedNowEnabled = new ArrayList<>();
 
-    if (when == null) {
-      when = LocalDateTime.now();
-    }
+		if (when == null) {
+			when = LocalDateTime.now();
+		}
 
-    final LocalDateTime finalWhen = when;
+		final LocalDateTime finalWhen = when;
 
-    featureDb.getFeatures().forEach((name, fs) -> {
-      if (fs.getWhenEnabled() == null) {
+		featureDb.getFeatures().forEach((name, fs) -> {
+			if (fs.getWhenEnabled() == null) {
 
-        unlockedNowEnabled.add(name);
+				unlockedNowEnabled.add(name);
 
-        fs.setWhenEnabled(finalWhen);
+				fs.setWhenEnabled(finalWhen);
 
-        featureDb.apply(fs);
-      }
-    });
+				featureDb.apply(fs);
+			}
+		});
 
-    return unlockedNowEnabled;
-  }
+		return unlockedNowEnabled;
+	}
 
-  public void validStateCheck(List<FeatureState> states) throws BadStateException {
-    for(FeatureState fs : states) {
-      if (fs.getWhenEnabled() != null && fs.isLocked()) {
-        throw new BadStateException(String.format("Attempted to set bad state on feature `%s`, both locked and enabled.", fs.getName()));
-      }
-    }
-  }
+	public void validStateCheck(List<FeatureState> states) throws BadStateException {
+		for (FeatureState fs : states) {
+			if (fs.getWhenEnabled() != null && fs.isLocked()) {
+				throw new BadStateException(String.format("Attempted to set bad state on feature `%s`, both locked and enabled.", fs.getName()));
+			}
+		}
+	}
 }

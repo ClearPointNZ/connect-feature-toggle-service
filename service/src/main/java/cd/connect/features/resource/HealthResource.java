@@ -8,8 +8,8 @@ import javax.ws.rs.Path;
  */
 @Path("/_status/healthz")
 public class HealthResource {
-  @GET
-  public String healthz() {
-    return "ok";
-  }
+	@GET
+	public String healthz() {
+		return "ok";
+	}
 }

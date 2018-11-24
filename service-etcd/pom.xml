@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>cd.connect.features</groupId>
+	<groupId>cd.connect.features</groupId>
 	<artifactId>connect-feature-service-etcd</artifactId>
 	<version>1.1-SNAPSHOT</version>
 	<name>feature-service-etcd</name>
@@ -36,76 +37,76 @@
 	</scm>
 
 
-  <dependencies>
-	  <dependency>
-		  <groupId>cd.connect.features</groupId>
-		  <artifactId>connect-feature-service-db-api</artifactId>
-		  <version>1.1-SNAPSHOT</version>
-	  </dependency>
-	  <dependency>
-		  <groupId>cd.connect.features</groupId>
-		  <artifactId>connect-feature-service</artifactId>
-		  <version>1.1-SNAPSHOT</version>
-	  </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>cd.connect.features</groupId>
+			<artifactId>connect-feature-service-db-api</artifactId>
+			<version>1.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>cd.connect.features</groupId>
+			<artifactId>connect-feature-service</artifactId>
+			<version>1.1-SNAPSHOT</version>
+		</dependency>
 
-	  <!-- jersey -->
+		<!-- jersey -->
 
 
-	  <!-- provided, we don't dictate these versions or combinations -->
-	  <dependency>
-		  <groupId>cd.connect.composites.java</groupId>
-		  <artifactId>connect-composite-springwebapp</artifactId>
-		  <version>[1.1,2)</version>
-		  <scope>provided</scope>
-	  </dependency>
+		<!-- provided, we don't dictate these versions or combinations -->
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-springwebapp</artifactId>
+			<version>[1.1,2)</version>
+			<scope>provided</scope>
+		</dependency>
 
-	  <dependency>
-		  <groupId>cd.connect.composites.java</groupId>
-		  <artifactId>connect-composite-jersey</artifactId>
-		  <version>[1.1, 2)</version>
-		  <scope>provided</scope>
-	  </dependency>
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-jersey</artifactId>
+			<version>[1.1, 2)</version>
+			<scope>provided</scope>
+		</dependency>
 
-	  <dependency>
-		  <groupId>cd.connect.composites.java</groupId>
-		  <artifactId>connect-composite-prometheus</artifactId>
-		  <version>[1.1,2)</version>
-		  <scope>provided</scope>
-	  </dependency>
-	  
-	  <!-- testing -->
-	  <dependency>
-		  <groupId>cd.connect.composites.java</groupId>
-		  <artifactId>connect-composite-test</artifactId>
-		  <version>[1.1, 2)</version>
-		  <scope>test</scope>
-	  </dependency>
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-prometheus</artifactId>
+			<version>[1.1,2)</version>
+			<scope>provided</scope>
+		</dependency>
 
-	  <!-- spring and its web app setup. ideally we should swap this with Dagger. -->
+		<!-- testing -->
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-test</artifactId>
+			<version>[1.1, 2)</version>
+			<scope>test</scope>
+		</dependency>
 
-	  <dependency>
-		  <groupId>cd.connect.composites.java</groupId>
-		  <artifactId>connect-composite-groovy</artifactId>
-		  <version>[1.1, 2)</version>
-		  <scope>test</scope>
-	  </dependency>
-  </dependencies>
+		<!-- spring and its web app setup. ideally we should swap this with Dagger. -->
 
-  <build>
-	  <plugins>
-      <plugin>
-        <groupId>io.repaint.maven</groupId>
-        <artifactId>tiles-maven-plugin</artifactId>
-        <version>2.10</version>
-        <extensions>true</extensions>
-        <configuration>
-          <filtering>false</filtering>
-          <tiles>
-            <tile>cd.connect.tiles:tile-java:[1.1, 2)</tile>
-            <tile>cd.connect.tiles:tile-groovy:[1.1, 2)</tile>
-          </tiles>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-groovy</artifactId>
+			<version>[1.1, 2)</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.repaint.maven</groupId>
+				<artifactId>tiles-maven-plugin</artifactId>
+				<version>2.10</version>
+				<extensions>true</extensions>
+				<configuration>
+					<filtering>false</filtering>
+					<tiles>
+						<tile>cd.connect.tiles:tile-java:[1.1, 2)</tile>
+						<tile>cd.connect.tiles:tile-groovy:[1.1, 2)</tile>
+					</tiles>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

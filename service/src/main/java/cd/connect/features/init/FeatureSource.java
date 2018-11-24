@@ -4,7 +4,6 @@ import cd.connect.features.api.FeatureSourceStatus;
 import cd.connect.features.db.FeatureDb;
 import com.bluetrainsoftware.common.config.ConfigKey;
 import com.bluetrainsoftware.common.config.PreStart;
-import net.stickycode.stereotype.configured.PostConfigured;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,73 +17,71 @@ import java.util.stream.Collectors;
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
  */
 public class FeatureSource {
-  private static final Logger log = LoggerFactory.getLogger(FeatureSource.class);
-  private Map<String, FeatureSourceStatus> features = new HashMap<>();
+	private static final Logger log = LoggerFactory.getLogger(FeatureSource.class);
+	private final FeatureDb featureDatabase;
+	@ConfigKey("feature-service.enumClass")
+	String enumSource = "";
 
-  @ConfigKey("feature-service.enumClass")
-  String enumSource = "";
+	@ConfigKey("feature-service.features")
+	String inlineSource = "";
+	private Map<String, FeatureSourceStatus> features = new HashMap<>();
 
-  @ConfigKey("feature-service.features")
-  String inlineSource = "";
+	public FeatureSource(FeatureDb featureDatabase) {
+		this.featureDatabase = featureDatabase;
+	}
 
-  private final FeatureDb featureDatabase;
+	@PreStart
+	public void init() {
+		if (enumSource.length() > 0) {
+			loadEnumSource();
+		} else if (inlineSource.length() > 0) {
+			loadInlineSource();
+		} else {
+			log.error("There are no sources of features.");
+			throw new RuntimeException("There are no sources of features.");
+		}
 
-  public FeatureSource(FeatureDb featureDatabase) {
-    this.featureDatabase = featureDatabase;
-  }
+		if (featureDatabase != null) {
+			featureDatabase.init(); // ensure it is initialized
+			featureDatabase.ensureExists(features);
+		}
+	}
 
-  @PreStart
-  public void init() {
-    if (enumSource.length() > 0) {
-      loadEnumSource();
-    } else if ( inlineSource.length() > 0) {
-      loadInlineSource();
-    } else {
-      log.error("There are no sources of features.");
-      throw new RuntimeException("There are no sources of features.");
-    }
+	private void loadInlineSource() {
+		String source = inlineSource.trim();
 
-    if (featureDatabase != null) {
-      featureDatabase.init(); // ensure it is initialized
-      featureDatabase.ensureExists(features);
-    }
-  }
+		Arrays.stream(source.split(",")).map(String::trim).filter(s -> s.length() > 0).forEach(s -> {
+				if (s.contains(":")) {
+					List<String> parts = Arrays.stream(s.split(":")).map(String::trim).filter(p -> p.length() > 0).collect(Collectors.toList());
 
-  private void loadInlineSource() {
-    String source = inlineSource.trim();
+					if (parts.size() == 2) {
+						features.put(parts.get(0), FeatureSourceStatus.toStatus(parts.get(1)));
+					} else {
+						log.warn("ignoring feature {} as it is not in  the format feature:label", s);
+					}
+				} else {
+					features.put(s, FeatureSourceStatus.toStatus(s));
+				}
+			}
+		);
+	}
 
-    Arrays.stream(source.split(",")).map(String::trim).filter(s -> s.length() > 0).forEach(s -> {
-        if (s.contains(":")) {
-          List<String> parts = Arrays.stream(s.split(":")).map(String::trim).filter(p -> p.length() > 0).collect(Collectors.toList());
+	public Map<String, FeatureSourceStatus> getFeatures() {
+		return features;
+	}
 
-          if (parts.size() == 2) {
-            features.put(parts.get(0), FeatureSourceStatus.toStatus(parts.get(1)));
-          } else {
-            log.warn("ignoring feature {} as it is not in  the format feature:label", s);
-          }
-        } else {
-          features.put(s, FeatureSourceStatus.toStatus(s));
-        }
-      }
-    );
-  }
+	private void loadEnumSource() {
+		try {
+			Class c = Class.forName(enumSource);
 
-  public Map<String, FeatureSourceStatus> getFeatures() {
-    return features;
-  }
+			for (Object enumObject : c.getEnumConstants()) {
+				Enum enumInstance = Enum.class.cast(enumObject);
 
-  private void loadEnumSource() {
-    try {
-      Class c = Class.forName(enumSource);
-
-      for(Object enumObject: c.getEnumConstants()) {
-        Enum enumInstance = Enum.class.cast(enumObject);
-
-        features.put(enumInstance.name(), FeatureSourceStatus.toStatus(enumInstance.toString()));
-      }
-    } catch (ClassNotFoundException e) {
-      log.error("Cannot find enum representing features", e);
-      throw new RuntimeException(e);
-    }
-  }
+				features.put(enumInstance.name(), FeatureSourceStatus.toStatus(enumInstance.toString()));
+			}
+		} catch (ClassNotFoundException e) {
+			log.error("Cannot find enum representing features", e);
+			throw new RuntimeException(e);
+		}
+	}
 }

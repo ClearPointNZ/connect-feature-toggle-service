@@ -3,8 +3,6 @@ package main;
 import io.ebean.annotation.Platform;
 import io.ebean.dbmigration.DbMigration;
 
-import java.io.IOException;
-
 /**
  * Generate the DB Migration.
  */

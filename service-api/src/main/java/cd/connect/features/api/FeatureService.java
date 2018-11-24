@@ -1,7 +1,6 @@
 package cd.connect.features.api;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -56,7 +55,7 @@ public interface FeatureService {
   @Path("enable-all")
   @Produces(value = MediaType.APPLICATION_JSON)
   List<String> enableAll(LocalDateTime when);
-  
+
   /**
    * Enable the feature.
    */
