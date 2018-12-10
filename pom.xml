@@ -15,8 +15,11 @@
     <module>service</module>
     <module>service-sql</module>
     <module>service-mysql</module>
-    <module>service-etcd</module>
+    <!--<module>service-etcd</module>-->
     <module>service-db-api</module>
+    <module>client-base</module>
+    <module>client-grpc</module>
+    <module>client-rest</module>
   </modules>
 
 </project>

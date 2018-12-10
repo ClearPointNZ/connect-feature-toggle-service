@@ -2,8 +2,9 @@ package cd.connect.features;
 
 import cd.connect.features.db.FeatureDbEtcd;
 import cd.connect.features.init.FeatureSource;
-import cd.connect.features.resource.FeatureRpcResource;
-import cd.connect.features.resource.GrpcServer;
+import cd.connect.features.resource.grpc.FeatureRpcResource;
+import cd.connect.features.resource.grpc.GrpcServerConfigured;
+import cd.connect.features.resource.jersey.JerseyModule;
 import cd.connect.features.services.FeatureStateChangeService;
 import org.springframework.context.annotation.Import;
 
@@ -19,7 +20,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({FeatureSource.class, JerseyModule.class, GrpcServer.class,
+@Import({FeatureSource.class, JerseyModule.class, GrpcServerConfigured.class,
   FeatureStateChangeService.class, FeatureRpcResource.class, FeatureDbEtcd.class})
 public @interface EnableEtcdToggleServer {
 }

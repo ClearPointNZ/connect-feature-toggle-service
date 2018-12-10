@@ -1,19 +1,13 @@
-package cd.connect.features.mysql;
+package cd.connect.features.sql;
 
 import cd.connect.features.api.FeatureSourceStatus;
 import cd.connect.features.api.FeatureState;
 import cd.connect.features.db.FeatureDb;
-import cd.connect.features.sql.EbeanHolder;
-import cd.connect.features.sql.SqlFeatureState;
-import com.bluetrainsoftware.common.config.ConfigKey;
-import com.bluetrainsoftware.common.config.PreStart;
 import io.ebean.EbeanServer;
 import io.ebean.annotation.Transactional;
-import net.stickycode.stereotype.configured.PostConfigured;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,22 +20,18 @@ import java.util.function.Consumer;
 /**
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
  */
-public class FeatureDbMySql implements FeatureDb {
-  private static final Logger log = LoggerFactory.getLogger(FeatureDbMySql.class);
-  private final EbeanHolder ebeanHolder;
+public class FeatureSqlDb implements FeatureDb {
+  private static final Logger log = LoggerFactory.getLogger(FeatureSqlDb.class);
+  private final EbeanSource ebeanHolder;
   private final List<Consumer<WatchSignal>> inflightWatchers = new ArrayList<>();
   private final ExecutorService watchPool = Executors.newCachedThreadPool();
-  @ConfigKey("mysql.refresh-period-in-seconds")
-  Integer refreshPeriod;
+  private final int refreshPeriod;
   private Map<String, SqlFeatureState> states = new HashMap<>();
 
-  @Inject
-  public FeatureDbMySql(EbeanHolder ebeanServer) {
+  public FeatureSqlDb(EbeanSource ebeanServer, int refreshPeriod) {
     this.ebeanHolder = ebeanServer;
-  }
-
-  @PostConfigured
-  public void initPolling() {
+    this.refreshPeriod = refreshPeriod;
+    
     if (refreshPeriod > 0) {
       watchPool.submit(this::waitAndTriggerPoll);
 
@@ -106,19 +96,10 @@ public class FeatureDbMySql implements FeatureDb {
           entry.getValue() == FeatureSourceStatus.LOCKED);
 
         ebeanServer.save(featureState);
-      } else {
-        if (entry.getValue() == FeatureSourceStatus.ENABLED) {
-          if (featureState.getWhenEnabled() == null) {
-            featureState.setWhenEnabled(LocalDateTime.now());
-          }
-        } else {
-          featureState.setWhenEnabled(null);
-        }
-
-        featureState.setLocked(entry.getValue() == FeatureSourceStatus.LOCKED);
-
-        ebeanServer.update(featureState);
       }
+      // else {
+        // it is there, leave it alone
+      //}
     });
   }
 
@@ -178,7 +159,6 @@ public class FeatureDbMySql implements FeatureDb {
   }
 
   @Override
-  @PreStart
   public void init() {
     log.info("prestart in feature-db-mysql");
   }

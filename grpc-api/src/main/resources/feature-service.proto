@@ -40,6 +40,8 @@ message FeatureCount {
 }
 
 service FeatureService {
+	rpc state (FeatureName) returns (FeatureState);
+
 	rpc all_features (Empty) returns (FeatureStates) {
 	}
 	rpc apply_all (FeatureStates) returns (FeatureStates) {

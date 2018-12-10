@@ -1,32 +1,22 @@
 package cd.connect.features.sql;
 
-import com.bluetrainsoftware.common.config.ConfigKey;
 import io.ebean.EbeanServer;
 import io.ebean.annotation.Platform;
 import io.ebean.config.DbMigrationConfig;
 import io.ebean.config.ServerConfig;
-import net.stickycode.stereotype.configured.PostConfigured;
 import org.avaje.datasource.DataSourceConfig;
+
+import javax.sql.DataSource;
 
 /**
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
  */
-public class EbeanHolder {
-  @ConfigKey("db.url")
-  String dbUrl;
-  @ConfigKey("db.driver")
-  String dbDriver = "";
-  @ConfigKey("db.password")
-  String dbPassword;
-  @ConfigKey("db.username")
-  String dbUsername;
-  @ConfigKey("db.max-connections")
-  Integer maxConnections = 3;
-  private EbeanServer ebeanServer;
+public class EbeanHolder implements EbeanSource {
+  private final EbeanServer ebeanServer;
+  private final ServerConfig config;
 
-  @PostConfigured
-  public void init() {
-    ServerConfig config = new ServerConfig();
+  public EbeanHolder(String dbUrl, String dbUsername, String dbPassword, int maxConnections, String dbDriver) {
+    this.config = new ServerConfig();
 
     DataSourceConfig dsConfig = new DataSourceConfig();
 
@@ -43,10 +33,16 @@ public class EbeanHolder {
     migrationConfig.setRunMigration(true);
     config.setMigrationConfig(migrationConfig);
 
-    ebeanServer = io.ebean.EbeanServerFactory.create(config);
+    this.ebeanServer = io.ebean.EbeanServerFactory.create(config);
   }
 
+  @Override
   public EbeanServer getEbeanServer() {
     return ebeanServer;
+  }
+
+  @Override
+  public DataSource getDatasource() {
+    return config.getDataSource();
   }
 }

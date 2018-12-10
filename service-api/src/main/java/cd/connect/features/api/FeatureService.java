@@ -14,6 +14,11 @@ import java.util.List;
 @Path("/features")
 public interface FeatureService {
   @GET
+  @Path("/{name}")
+  @Produces(value = MediaType.APPLICATION_JSON)
+  FeatureState getFeature(@PathParam("name") String feature_name);
+
+  @GET
   @Produces(value = MediaType.APPLICATION_JSON)
   List<FeatureState> all_features();
 

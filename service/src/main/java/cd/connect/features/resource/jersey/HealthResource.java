@@ -1,4 +1,4 @@
-package cd.connect.features.resource;
+package cd.connect.features.resource.jersey;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

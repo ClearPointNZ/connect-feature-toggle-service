@@ -1,11 +1,12 @@
 package cd.connect.features.mysql;
 
-import cd.connect.features.JerseyModule;
-import cd.connect.features.init.FeatureSource;
-import cd.connect.features.resource.FeatureRpcResource;
-import cd.connect.features.resource.GrpcServer;
+import cd.connect.features.resource.jersey.JerseyModule;
+import cd.connect.features.init.FeatureSourceConfigured;
+import cd.connect.features.resource.grpc.FeatureRpcResource;
+import cd.connect.features.resource.grpc.GrpcServerConfigured;
 import cd.connect.features.services.FeatureStateChangeService;
-import cd.connect.features.sql.EbeanHolder;
+import cd.connect.features.sql.EbeanHolderConfigured;
+import cd.connect.features.sql.FeatureSqlDb;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -20,7 +21,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({FeatureSource.class, JerseyModule.class, GrpcServer.class,
-  FeatureStateChangeService.class, FeatureRpcResource.class, FeatureDbMySql.class, EbeanHolder.class})
+@Import({FeatureSourceConfigured.class, JerseyModule.class, GrpcServerConfigured.class,
+  FeatureStateChangeService.class, FeatureRpcResource.class, FeatureSqlDb.class, EbeanHolderConfigured.class})
 public @interface EnableMysqlToggleServer {
 }

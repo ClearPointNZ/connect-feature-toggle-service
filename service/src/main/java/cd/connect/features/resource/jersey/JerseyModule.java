@@ -1,7 +1,5 @@
-package cd.connect.features;
+package cd.connect.features.resource.jersey;
 
-import cd.connect.features.resource.FeatureResource;
-import cd.connect.features.resource.HealthResource;
 import io.prometheus.client.exporter.MetricsServlet;
 
 import java.util.stream.Stream;

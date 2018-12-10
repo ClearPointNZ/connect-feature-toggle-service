@@ -1,4 +1,4 @@
-package cd.connect.features.resource;
+package cd.connect.features.resource.jersey;
 
 import cd.connect.features.api.FeatureService;
 import cd.connect.features.api.FeatureState;
@@ -29,6 +29,17 @@ public class FeatureResource implements FeatureService {
 	public FeatureResource(FeatureDb featureDb, FeatureStateChangeService featureStateChangeService) {
 		this.featureDb = featureDb;
 		this.featureStateChangeService = featureStateChangeService;
+	}
+
+	@Override
+	public FeatureState getFeature(String feature_name) {
+		FeatureState fs = featureDb.getFeature(feature_name);
+
+		if (fs == null) {
+			throw new NotFoundException("No such feature");
+		}
+
+		return fs;
 	}
 
 	@Override

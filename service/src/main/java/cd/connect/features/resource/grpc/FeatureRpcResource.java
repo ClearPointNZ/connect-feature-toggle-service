@@ -1,4 +1,4 @@
-package cd.connect.features.resource;
+package cd.connect.features.resource.grpc;
 
 import cd.connect.features.api.FeatureState;
 import cd.connect.features.db.FeatureDb;
@@ -70,6 +70,23 @@ public class FeatureRpcResource extends FeatureServiceGrpc.FeatureServiceImplBas
 
 	private FeatureState toFeatureState(FeatureStateService.FeatureState state) {
 		return new FeatureState(state.getName(), stringToLocalDateTime(state.getWhenEnabled()), state.getLocked());
+	}
+
+	@Override
+	public void state(FeatureName request, StreamObserver<FeatureStateService.FeatureState> responseObserver) {
+		FeatureState feature = featureDb.getFeature(request.getName());
+
+		if (feature == null) {
+			try {
+				throw new RuntimeException("not found");
+			} catch (RuntimeException e) {
+				responseObserver.onError(e);
+			}
+		} else {
+			responseObserver.onNext(fromFeatureState(feature));
+		}
+
+		responseObserver.onCompleted();
 	}
 
 	@Override

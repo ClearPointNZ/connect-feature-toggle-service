@@ -12,8 +12,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class FeatureSourceTest {
 	@Test
 	public void basicEnum() {
-		FeatureSource fs = new FeatureSource(null);
-		fs.enumSource = SampleFeatures.class.getName();
+		FeatureSource fs = new FeatureSource(null, SampleFeatures.class.getName(), null);
 		fs.init();
 		assertThat(fs.getFeatures().size()).isEqualTo(2);
 		assertThat(fs.getFeatures()).containsKey(SampleFeatures.EAT_PORKIES.name());

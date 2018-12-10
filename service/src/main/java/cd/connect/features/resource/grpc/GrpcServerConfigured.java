@@ -1,4 +1,4 @@
-package cd.connect.features.resource;
+package cd.connect.features.resource.grpc;
 
 import com.bluetrainsoftware.common.config.ConfigKey;
 import io.grpc.Server;
@@ -12,14 +12,14 @@ import java.io.IOException;
 /**
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
  */
-public class GrpcServer {
-	private static final Logger log = LoggerFactory.getLogger(GrpcServer.class);
+public class GrpcServerConfigured {
+	private static final Logger log = LoggerFactory.getLogger(GrpcServerConfigured.class);
 	private final FeatureRpcResource featureRpcResource;
 	@ConfigKey("grpc.port")
 	Integer port = 2865;
 	private Server server;
 
-	public GrpcServer(FeatureRpcResource featureRpcResource) {
+	public GrpcServerConfigured(FeatureRpcResource featureRpcResource) {
 		this.featureRpcResource = featureRpcResource;
 	}
 

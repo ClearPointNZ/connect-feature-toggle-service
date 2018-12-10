@@ -19,19 +19,15 @@ import java.util.stream.Collectors;
 public class FeatureSource {
 	private static final Logger log = LoggerFactory.getLogger(FeatureSource.class);
 	private final FeatureDb featureDatabase;
-	@ConfigKey("feature-service.enumClass")
-	String enumSource = "";
-
-	@ConfigKey("feature-service.features")
-	String inlineSource = "";
 	private Map<String, FeatureSourceStatus> features = new HashMap<>();
+	private final String enumSource;
+	private final String inlineSource;
 
-	public FeatureSource(FeatureDb featureDatabase) {
+	public FeatureSource(FeatureDb featureDatabase, String enumSource, String inlineSource) {
 		this.featureDatabase = featureDatabase;
-	}
-
-	@PreStart
-	public void init() {
+		this.enumSource = enumSource;
+		this.inlineSource = inlineSource;
+		
 		if (enumSource.length() > 0) {
 			loadEnumSource();
 		} else if (inlineSource.length() > 0) {
@@ -45,6 +41,9 @@ public class FeatureSource {
 			featureDatabase.init(); // ensure it is initialized
 			featureDatabase.ensureExists(features);
 		}
+	}
+
+	public void init() {
 	}
 
 	private void loadInlineSource() {
