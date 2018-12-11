@@ -50,9 +50,9 @@
     </dependency>
 
     <dependency>
-      <groupId>cd.connect.features</groupId>
-      <artifactId>accelerate-client-base</artifactId>
-      <version>1.1-SNAPSHOT</version>
+	    <groupId>cd.connect.features</groupId>
+	    <artifactId>feature-service-client-base</artifactId>
+	    <version>1.1-SNAPSHOT</version>
     </dependency>
 
     <!-- grpc -->

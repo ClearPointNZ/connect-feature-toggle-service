@@ -35,19 +35,16 @@
 		<tag>HEAD</tag>
 	</scm>
 
-	<dependencies>
-		<dependency>
-			<groupId>cd.connect.composites.java</groupId>
-			<artifactId>connect-composite-jersey</artifactId>
-			<version>[1.1, 2)</version>
-			<scope>provided</scope>
-		</dependency>
+	<properties>
+		<version.io.opentracing-opentracing>0.31.0</version.io.opentracing-opentracing>
+	</properties>
 
+	<dependencies>
+		<!-- this is not "provided" as it must be set up -->
 		<dependency>
-			<groupId>cd.connect.composites.java</groupId>
-			<artifactId>connect-composite-log4j2</artifactId>
-			<version>[1.1, 2)</version>
-      <scope>provided</scope>
+			<groupId>io.opentracing</groupId>
+			<artifactId>opentracing-util</artifactId>
+			<version>${version.io.opentracing-opentracing}</version>
 		</dependency>
 
 		<!-- testing -->
