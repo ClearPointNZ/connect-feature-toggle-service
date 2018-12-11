@@ -9,7 +9,7 @@
 	<name>feature-service-java-api</name>
 
 	<description>
-
+		JAX-RS API for A REST Enabled Feature Service. Servers are expected to implement this API.
 	</description>
 
 	<url>https://clearpointnz.github.io/connect/</url>
