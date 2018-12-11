@@ -9,7 +9,7 @@
 	<name>feature-grpc-api</name>
 
 	<description>
-
+		This artifact contains the GRPC proto file and compiled client libraries for such. 
 	</description>
 
 	<url>https://clearpointnz.github.io/connect/</url>
