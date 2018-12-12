@@ -53,12 +53,12 @@
 	  <dependency>
 		  <groupId>cd.connect.features</groupId>
 		  <artifactId>connect-feature-grpc-api</artifactId>
-		  <version>1.1-SNAPSHOT</version>
+		  <version>[1.1, 2)</version>
 	  </dependency>
     <dependency>
 	    <groupId>cd.connect.features</groupId>
 	    <artifactId>feature-service-client-base</artifactId>
-	    <version>1.1-SNAPSHOT</version>
+	    <version>[1.1, 2)</version>
     </dependency>
 
     <!-- grpc -->
