@@ -45,7 +45,6 @@ public class BaseGrpcRepository implements FeatureRepository {
       fs.locked = state.getLocked();
       fs.whenEnabled = stringToLocalDateTime(state.getWhenEnabled());
     } catch (Exception e) {
-      e.printStackTrace();
       fs.locked = true;
     }
 
