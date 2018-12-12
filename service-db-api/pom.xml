@@ -9,7 +9,8 @@
 	<name>feature-service-db-api</name>
 
 	<description>
-
+		A database backend needs to implement this code only API. It is implemented by
+		SQL and ectd.
 	</description>
 
 	<url>https://clearpointnz.github.io/connect/</url>

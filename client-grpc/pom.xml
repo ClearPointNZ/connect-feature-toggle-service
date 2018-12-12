@@ -6,6 +6,7 @@
 	<groupId>cd.connect.features</groupId>
 	<artifactId>feature-service-client-grpc</artifactId>
 	<version>1.1-SNAPSHOT</version>
+	<name>feature-service-client-grpc</name>
 
 	<description>
     Accelerate Feature Toggle GRPC client for Java.

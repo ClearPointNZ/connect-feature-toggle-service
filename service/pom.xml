@@ -9,7 +9,8 @@
 	<name>feature-service</name>
 
 	<description>
-
+		This is the core functionality of the feature toggle service. It orchestrates the GRPC and
+		REST clients and validates their changes and pushes them to the backend.
 	</description>
 
 	<url>https://clearpointnz.github.io/connect/</url>

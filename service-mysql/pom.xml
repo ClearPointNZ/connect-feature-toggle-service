@@ -9,7 +9,7 @@
 	<name>feature-service-mysql</name>
 
 	<description>
-
+		This is a holder only and isn't released. It just stores the DDL for mysql.
 	</description>
 
 	<url>https://clearpointnz.github.io/connect/</url>
