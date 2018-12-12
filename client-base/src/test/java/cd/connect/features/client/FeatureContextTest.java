@@ -45,12 +45,13 @@ public class FeatureContextTest {
 	@Test
 	public void testOpenTracingOverride() {
 		FeatureContext.repository = mock(FeatureRepository.class);
-		
-		Tracer tracer = mock(Tracer.class);
-		GlobalTracer.register(tracer);
 
+		Tracer tracer = getTracer();
+		
 		Span span = mock(Span.class);
 		when(tracer.activeSpan()).thenReturn(span);
+
+		System.setProperty("feature-toggles.allow-override", "true");
 
 		// override so mary is active, john is disabled
 		when(span.getBaggageItem(eq(ACCELERATE_FEATURE_OVERRIDE))).thenReturn(String.format("%s=true%s=false",
@@ -67,6 +68,38 @@ public class FeatureContextTest {
 
 		assertThat(SampleFeatures.mary.isActive()).isTrue();
 		assertThat(SampleFeatures.john.isActive()).isFalse();
+	}
 
+	private Tracer getTracer() {
+		Tracer tracer;
+
+		if (GlobalTracer.isRegistered()) {
+			tracer = GlobalTracer.get();
+		} else {
+			tracer = mock(Tracer.class);
+			GlobalTracer.register(tracer);
+		}
+
+		return tracer;
+	}
+
+	@Test
+	public void noPropertyMeansNoTracingOverride() {
+		FeatureContext.repository = mock(FeatureRepository.class);
+
+		Tracer tracer = getTracer();
+
+		Span span = mock(Span.class);
+		when(tracer.activeSpan()).thenReturn(span);
+
+		// no system property means no-override works
+		when(span.getBaggageItem(eq(ACCELERATE_FEATURE_OVERRIDE))).thenReturn(String.format("%s=true",
+			SampleFeatures.mary.name()));
+
+		// mary is locked, john is enabled
+		FeatureState mary = new FeatureState();
+		mary.locked = true;
+		when(FeatureContext.repository.getFeatureState(eq(SampleFeatures.mary.name()))).thenReturn(mary);
+		assertThat(SampleFeatures.mary.isActive()).isTrue();
 	}
 }

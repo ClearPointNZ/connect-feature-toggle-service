@@ -18,17 +18,19 @@ public class FeatureContext {
       throw new RuntimeException("You must configure your feature repository before using it.");
     }
 
-	  String override = Optional.ofNullable(GlobalTracer.get())
-		  .map(Tracer::activeSpan)
-		  .filter(Objects::nonNull)
-		  .map(span -> span.getBaggageItem(ACCELERATE_FEATURE_OVERRIDE)).orElse(null);
+    if (System.getProperty("feature-toggles.allow-override") != null ) {
+	    String override = Optional.ofNullable(GlobalTracer.get())
+		    .map(Tracer::activeSpan)
+		    .filter(Objects::nonNull)
+		    .map(span -> span.getBaggageItem(ACCELERATE_FEATURE_OVERRIDE)).orElse(null);
 
-    if (override != null) {
-	    if (override.contains(String.format("%s=true", feature.name()))) {
-	    	return true;
-	    }
-	    if (override.contains(String.format("%s=false", feature.name()))) {
-		    return false;
+	    if (override != null) {
+		    if (override.contains(String.format("%s=true", feature.name()))) {
+			    return true;
+		    }
+		    if (override.contains(String.format("%s=false", feature.name()))) {
+			    return false;
+		    }
 	    }
     }
 
