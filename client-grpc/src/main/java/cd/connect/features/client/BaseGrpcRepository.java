@@ -22,7 +22,7 @@ public class BaseGrpcRepository implements FeatureRepository {
   }
 
   private LocalDateTime stringToLocalDateTime(String str) {
-    if (str == null) {
+    if (str == null || str.trim().length() == 0) {
       return null;
     }
 
