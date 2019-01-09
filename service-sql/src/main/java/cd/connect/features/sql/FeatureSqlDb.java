@@ -33,14 +33,24 @@ public class FeatureSqlDb implements FeatureDb {
     this.refreshPeriod = refreshPeriod;
     
     if (refreshPeriod > 0) {
+      loadStateForWatchers();
+
       watchPool.submit(this::waitAndTriggerPoll);
 
       Runtime.getRuntime().addShutdownHook(new Thread(watchPool::shutdown));
+    } else {
+      log.info("no refresh time, always loading from db.");
     }
   }
 
   protected void pollForUpdates() {
-    log.debug("polling for updates...");
+    refreshStates();
+
+    waitAndTriggerPoll();
+  }
+
+  private void refreshStates() {
+    log.debug("refreshing states from database...");
 
     Map<String, SqlFeatureState> newStates = new HashMap<>(states);
 
@@ -48,8 +58,9 @@ public class FeatureSqlDb implements FeatureDb {
       SqlFeatureState existing = newStates.get(fs.getName());
 
       if (existing == null || !existing.equals(fs)) { // new one
-        signalWatchers(new WatchSignal(fs.getName(), fs.toFeatureState(), false));
+        log.info("state `{}` updated, changing and signalling watchers", fs.getName());
         states.put(fs.getName(), fs); // add it in
+        signalWatchers(new WatchSignal(fs.getName(), fs.toFeatureState(), false));
       }
 
       newStates.remove(fs.getName());
@@ -59,8 +70,6 @@ public class FeatureSqlDb implements FeatureDb {
       signalWatchers(new WatchSignal(deletedKeys, newStates.get(deletedKeys).toFeatureState(), true));
       states.remove(deletedKeys);
     });
-
-    waitAndTriggerPoll();
   }
 
   private void waitAndTriggerPoll() {
@@ -113,28 +122,39 @@ public class FeatureSqlDb implements FeatureDb {
   }
 
   private void loadStateForWatchers() {
+    log.info("loading initial state from db");
     ebeanHolder.getEbeanServer().find(SqlFeatureState.class).findEach(fs -> states.put(fs.getName(), fs));
   }
 
 
   @Override
   public Map<String, FeatureState> getFeatures() {
-    EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
+    final Map<String, FeatureState> states = new HashMap<>();
 
-    Map<String, FeatureState> states = new HashMap<>();
+    if (refreshPeriod > 0) {
+      this.states.forEach((k, v) -> states.put(k, v.toFeatureState()));
+    } else {
+      EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
 
-    ebeanServer.find(SqlFeatureState.class).findEach(fs -> {
-      states.put(fs.getName(), fs.toFeatureState());
-    });
+      ebeanServer.find(SqlFeatureState.class).findEach(fs -> {
+        states.put(fs.getName(), fs.toFeatureState());
+      });
+    }
 
     return states;
   }
 
   @Override
   public FeatureState getFeature(String name) {
-    EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
+    SqlFeatureState fs = null;
 
-    SqlFeatureState fs = ebeanServer.find(SqlFeatureState.class, name);
+    if (refreshPeriod > 0) {
+      fs = states.get(name);
+    } else {
+      EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
+
+      fs = ebeanServer.find(SqlFeatureState.class, name);
+    }
 
     return fs == null ? null : fs.toFeatureState();
   }
@@ -143,9 +163,8 @@ public class FeatureSqlDb implements FeatureDb {
   public void refresh() {
   }
 
-  @Override
   @Transactional
-  public void apply(FeatureState featureState) {
+  private void applyFeatureChange(FeatureState featureState) {
     EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
 
     SqlFeatureState fs = ebeanServer.find(SqlFeatureState.class, featureState.getName());
@@ -155,6 +174,15 @@ public class FeatureSqlDb implements FeatureDb {
       fs.setWhenEnabled(featureState.getWhenEnabled());
       fs.setLocked(featureState.isLocked());
       ebeanServer.save(fs);
+    }
+  }
+
+  @Override
+  public void apply(FeatureState featureState) {
+    applyFeatureChange(featureState);
+    
+    if (refreshPeriod > 0) {
+      refreshStates();
     }
   }
 
