@@ -110,6 +110,17 @@ public class FeatureSqlDb implements FeatureDb {
         // it is there, leave it alone
       //}
     });
+
+    List<SqlFeatureState> deleteItems = new ArrayList<>();
+    ebeanServer.find(SqlFeatureState.class).findEach(e -> {
+      if (features.get(e.getName()) == null) {
+        deleteItems.add(e);
+      }
+    });
+
+    if (deleteItems.size() > 0) {
+      deleteItems.forEach(ebeanServer::delete);
+    }
   }
 
   @Override
