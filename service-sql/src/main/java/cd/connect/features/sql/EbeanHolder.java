@@ -4,7 +4,7 @@ import io.ebean.EbeanServer;
 import io.ebean.annotation.Platform;
 import io.ebean.config.DbMigrationConfig;
 import io.ebean.config.ServerConfig;
-import org.avaje.datasource.DataSourceConfig;
+import io.ebean.datasource.DataSourceConfig;
 
 import javax.sql.DataSource;
 

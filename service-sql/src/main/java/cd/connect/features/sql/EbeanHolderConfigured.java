@@ -2,11 +2,7 @@ package cd.connect.features.sql;
 
 import com.bluetrainsoftware.common.config.ConfigKey;
 import io.ebean.EbeanServer;
-import io.ebean.annotation.Platform;
-import io.ebean.config.DbMigrationConfig;
-import io.ebean.config.ServerConfig;
 import net.stickycode.stereotype.configured.PostConfigured;
-import org.avaje.datasource.DataSourceConfig;
 
 /**
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
