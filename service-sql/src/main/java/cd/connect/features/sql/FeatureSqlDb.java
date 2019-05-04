@@ -2,7 +2,7 @@ package cd.connect.features.sql;
 
 import cd.connect.features.api.FeatureSourceStatus;
 import cd.connect.features.api.FeatureState;
-import cd.connect.features.db.FeatureDb;
+import cd.connect.features.api.FeatureDb;
 import io.ebean.EbeanServer;
 import io.ebean.annotation.Transactional;
 import org.slf4j.Logger;

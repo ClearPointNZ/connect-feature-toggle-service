@@ -1,0 +1,287 @@
+openapi: 3.0.1
+info:
+  title: FeatureServiceApi
+  description: This describes the api for the feature toggle service
+  version: "1.1.1"
+paths:
+  /features:
+    get:
+      tags:
+        - FeatureService
+      description: "Gets a list of features and their states"
+      operationId: allFeatures
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeatureState"
+    put:
+      tags:
+        - FeatureService
+      description: "Gets a list of features and their states"
+      operationId: applyAll
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/FeatureState"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeatureState"
+  /features/refresh:
+    put:
+      tags:
+        - FeatureService
+      description: "refresh feature states"
+      operationId: refresh
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+  /features/count:
+    get:
+      tags:
+        - FeatureService
+      description: "count number of features. Convenience function for UI."
+      operationId: count
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                type: integer
+  /features/enabled:
+    get:
+      tags:
+        - FeatureService
+      description: "the features that are enabled. Convenience function for UI."
+      operationId: enabledFeatures
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: string
+  /features/disabled:
+    get:
+      tags:
+        - FeatureService
+      description: "the features that are disabled. Convenience function for UI."
+      operationId: disabledFeatures
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: string
+  /features/enable-all:
+    tags:
+      - FeatureService
+    description: "Enable all features"
+    operationId: enableAllFeatures
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FeatureTimestamp"
+    responses:
+      "200":
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/FeatureState"
+  /features/disable-all:
+    tags:
+      - FeatureService
+    description: "Disable all features"
+    operationId: disableAllFeatures
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FeatureTimestamp"
+    responses:
+      "200":
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/FeatureState"
+  /features/unlock-all:
+    tags:
+      - FeatureService
+    description: "Unlock all features"
+    operationId: unlockAllFeatures
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FeatureTimestamp"
+    responses:
+      "200":
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/FeatureState"
+  /features/lock-all:
+    tags:
+      - FeatureService
+    description: "Locks all features"
+    operationId: lockAllFeatures
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FeatureTimestamp"
+    responses:
+      "200":
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/FeatureState"
+  /features/feature/{name}:
+    get:
+      tags:
+        - FeatureService
+      description: "Gets the details about the feature identified by the name"
+      operationId: getFeature
+      parameters:
+        - name: name
+          in: path
+          schema:
+            type: string
+          example: "FEATURE_BUFFER_STOCK"
+          description: "the feature name"
+          required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureState"
+  /features/enable/{name}:
+    put:
+      tags:
+        - FeatureService
+      description: "Enables feature"
+      operationId: enableFeature
+      parameters:
+        - name: name
+          in: path
+          schema:
+            type: string
+          example: "FEATURE_BUFFER_STOCK"
+          description: "the feature name"
+          required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureState"
+  /features/disable/{name}:
+    put:
+      tags:
+        - FeatureService
+      description: "Disables feature"
+      operationId: disableFeature
+      parameters:
+        - name: name
+          in: path
+          schema:
+            type: string
+          example: "FEATURE_BUFFER_STOCK"
+          description: "the feature name"
+          required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureState"
+  /features/lock/{name}:
+    put:
+      tags:
+        - FeatureService
+      description: "Locks feature"
+      operationId: lockFeature
+      parameters:
+        - name: name
+          in: path
+          schema:
+            type: string
+          example: "FEATURE_BUFFER_STOCK"
+          description: "the feature name"
+          required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureState"
+  /features/unlock/{name}:
+    put:
+      tags:
+        - FeatureService
+      description: "Unlocks feature"
+      operationId: unlockFeature
+      parameters:
+        - name: name
+          in: path
+          schema:
+            type: string
+          example: "FEATURE_BUFFER_STOCK"
+          description: "the feature name"
+          required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureState"
+
+components:
+  schemas:
+    FeatureState:
+      properties:
+        name:
+          type: string
+          required: true
+        whenEnabled:
+          type: string
+          format: datetime
+        locked:
+          type: boolean
+          required: true
+    FeatureTimestamp:
+      properties:
+        whenEnabled:
+          type: string
+          format: datetime
+

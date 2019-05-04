@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>cd.connect.features</groupId>
+	<artifactId>service-rest-openapi-java</artifactId>
+	<version>1.1-SNAPSHOT</version>
+	<name>service-rest-openapi-java</name>
+
+	<description>
+    This is the compiled Jersey API for the client and server side of Java REST.
+	</description>
+
+	<url>https://clearpointnz.github.io/connect/</url>
+	<developers>
+		<developer>
+			<email>richard@bluetrainsoftware.com</email>
+			<id>rvowles</id>
+			<name>Richard Vowles</name>
+			<organization>on behalf of ClearPoint NZ Ltd</organization>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>Apache License 2.0</name>
+			<url>https://opensource.org/licenses/Apache-2.0</url>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:git@github.com:clearpointnz/connect-feature-toggle-server.git</connection>
+		<developerConnection>scm:git:git@github.com:clearpointnz/connect-feature-toggle-server.git</developerConnection>
+		<url>git@github.com:clearpointnz/connect-feature-toggle-server.git</url>
+		<tag>HEAD</tag>
+	</scm>
+
+  <properties>
+    <jersey.version>2.28</jersey.version>
+    <!-- this is only generated classes -->
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+  </properties>
+
+	<dependencies>
+    <dependency>
+      <groupId>cd.connect.openapi.gensupport</groupId>
+      <artifactId>openapi-generator-support</artifactId>
+      <version>1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>2.0.7</version>
+    </dependency>
+
+    <dependency>
+      <groupId>cd.connect.jersey</groupId>
+      <artifactId>jersey-common</artifactId>
+      <version>1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>cd.connect.composites.java</groupId>
+      <artifactId>connect-composite-jersey</artifactId>
+      <version>[1.1, 2)</version>
+    </dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.repaint.maven</groupId>
+				<artifactId>tiles-maven-plugin</artifactId>
+				<version>2.10</version>
+				<extensions>true</extensions>
+				<configuration>
+					<filtering>false</filtering>
+					<tiles>
+						<tile>cd.connect.tiles:tile-java:[1.1, 2)</tile>
+					</tiles>
+				</configuration>
+			</plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack openapi api files</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>cd.connect.features</groupId>
+                  <artifactId>openapi</artifactId>
+                  <version>1.1-SNAPSHOT</version>
+                  <type>jar</type>
+                  <outputDirectory>${project.basedir}/openapi/</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <overWriteReleases>true</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>io.swagger.codegen.v3</groupId>
+        <artifactId>swagger-codegen-maven-plugin</artifactId>
+        <version>3.0.8</version>
+        <dependencies>
+          <dependency>
+            <groupId>cd.connect.openapi</groupId>
+            <artifactId>connect-openapi-jersey2</artifactId>
+            <version>3.5-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>todo-api</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <output>${project.basedir}/target/generated-sources/api</output>
+              <apiPackage>cd.connect.features</apiPackage>
+              <modelPackage>cd.connect.features</modelPackage>
+              <inputSpec>${project.basedir}/openapi/api/feature-service-api.yaml</inputSpec>
+              <language>jersey2-api</language>
+              <library>jersey2-api</library>
+
+              <configOptions> <!-- this deals with a bug in the Swagger plugin itself -->
+                <configOption>
+                  <name>meep</name>
+                  <value>meep</value>
+                </configOption>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-generated-source</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/api/src/gen</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+		</plugins>
+	</build>
+</project>

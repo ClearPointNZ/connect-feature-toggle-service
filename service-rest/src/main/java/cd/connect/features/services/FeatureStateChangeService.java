@@ -1,7 +1,7 @@
 package cd.connect.features.services;
 
-import cd.connect.features.api.FeatureDb;
 import cd.connect.features.api.FeatureState;
+import cd.connect.features.db.FeatureDb;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

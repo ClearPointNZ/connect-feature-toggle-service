@@ -1,0 +1,27 @@
+= Feature Service Server
+
+This is the first iteration of the feature service.
+
+=== Three States
+
+A Feature in this platform has three states:
+
+- UNLOCKED: A feature that can move to LOCKED or ENABLED.
+- LOCKED: when a feature should not be able to be enabled (such as when it goes into a QA environment that
+is being used for manual tests and the QA automation engineers and Developers do not want features to be tested in this
+fashion). This is also the default state for a new feature - new features appearing in environments should not by default
+be allowed to be turned on.
+- ENABLED: an enabled feature, code under it is active and once it reaches production it should be in the process
+of removal.
+
+=== Tech
+
+It is backed by etcd, and is written in Java, Spring, Jersey and extends itself using grpc. For services such as this
+where Spring is unnecessary, we will be transitioning to just Jersey as having two DI frameworks is not necessary.
+Spring is typically used when its extensive support is required.
+
+
+==== Genesis
+This is based on working for a few years with the TogglZ
+library and then working with a client that wanted to be more involved, but had to have signals as to when something
+was ready for their QA engineers to actually start looking at it.
