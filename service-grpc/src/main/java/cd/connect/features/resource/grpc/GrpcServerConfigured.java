@@ -21,17 +21,25 @@ public class GrpcServerConfigured {
 		this.port = port;
 	}
 
-	public Server init() throws IOException {
+  /**
+   * Initializes the gRPC server and returns a shutdown hook that should be called to shut down
+   * the server.
+   * @return
+   * @throws IOException
+   */
+	public Runnable init() throws IOException {
 		log.info("starting grpc server on port {}", port);
 
 		server = ServerBuilder.forPort(port)
 			.addService(featureRpcResource).build().start();
 
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			log.info("Shutting down grpc server on port {}" + port);
-			server.shutdown();
-		}));
+		// this should be done as part of the lifecycle hook
+//		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//		}));
 
-		return server;
+		return () -> {
+      log.info("Shutting down grpc server on port {}", port);
+      server.shutdown();
+    };
 	}
 }

@@ -75,7 +75,8 @@ paths:
             application/json:
               schema:
                 type: array
-                items: string
+                items:
+                  type: string
   /features/disabled:
     get:
       tags:
@@ -88,7 +89,8 @@ paths:
             application/json:
               schema:
                 type: array
-                items: string
+                items:
+                  type: string
   /features/enable-all:
     tags:
       - FeatureService
@@ -275,7 +277,7 @@ components:
           required: true
         whenEnabled:
           type: string
-          format: datetime
+          format: date-time
         locked:
           type: boolean
           required: true
@@ -283,5 +285,5 @@ components:
       properties:
         whenEnabled:
           type: string
-          format: datetime
+          format: date-time
 

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>cd.connect.features</groupId>
+	<artifactId>sample-app-inmemory</artifactId>
+	<version>2.1-SNAPSHOT</version>
+	<name>sample-app-inmemory</name>
+
+	<description>
+    A feature toggle service using an in memory database. You can build this one yourself by including it as
+    dependency and adding your own docker imaging in at the end. You would wish to do this so you get your
+    own feature toggles dependency built in.
+	</description>
+
+	<url>https://clearpointnz.github.io/connect/</url>
+	<developers>
+		<developer>
+			<email>richard@bluetrainsoftware.com</email>
+			<id>rvowles</id>
+			<name>Richard Vowles</name>
+			<organization>on behalf of ClearPoint NZ Ltd</organization>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>Apache License 2.0</name>
+			<url>https://opensource.org/licenses/Apache-2.0</url>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:git@github.com:clearpointnz/connect-feature-toggle-server.git</connection>
+		<developerConnection>scm:git:git@github.com:clearpointnz/connect-feature-toggle-server.git</developerConnection>
+		<url>git@github.com:clearpointnz/connect-feature-toggle-server.git</url>
+		<tag>HEAD</tag>
+	</scm>
+
+  <properties>
+    <jersey.version>2.28</jersey.version>
+  </properties>
+
+	<dependencies>
+		<dependency>
+      <groupId>cd.connect.features</groupId>
+      <artifactId>feature-db-inmemory</artifactId>
+      <version>2.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+      <groupId>cd.connect.features</groupId>
+      <artifactId>connect-feature-service-rest</artifactId>
+      <version>2.1-SNAPSHOT</version>
+		</dependency>
+
+    <!-- runner and property loader -->
+    <dependency>
+      <groupId>com.bluetrainsoftware.bathe</groupId>
+      <artifactId>bathe-booter</artifactId>
+      <version>[3.1, 4)</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.bluetrainsoftware.bathe.initializers</groupId>
+      <artifactId>system-property-loader</artifactId>
+      <version>3.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>cd.connect.common</groupId>
+      <artifactId>connect-app-declare-config</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>cd.connect.common</groupId>
+      <artifactId>connect-app-lifecycle</artifactId>
+      <version>1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>cd.connect.common</groupId>
+      <artifactId>connect-java-logging-log4j2</artifactId>
+      <version>1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>cd.connect.jersey</groupId>
+      <artifactId>jersey-common</artifactId>
+      <version>[1.1, 2)</version>
+    </dependency>
+    <dependency>
+      <groupId>cd.connect.common</groupId>
+      <artifactId>connect-prometheus-jersey</artifactId>
+      <version>[2.2, 3)</version>
+    </dependency>
+
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-jersey</artifactId>
+			<version>[1.1, 2)</version>
+		</dependency>
+    <dependency>
+      <groupId>cd.connect.common</groupId>
+      <artifactId>connect-java-jackson</artifactId>
+      <version>[1.2, 2)</version>
+    </dependency>
+
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-prometheus</artifactId>
+			<version>[1.1,2)</version>
+			<scope>provided</scope>
+		</dependency>
+
+    <dependency>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-netty-http</artifactId>
+      <version>${jersey.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-all</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <version>4.1.36.Final</version>
+    </dependency>
+
+		<!-- testing -->
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-test</artifactId>
+			<version>[1.1, 2)</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.repaint.maven</groupId>
+				<artifactId>tiles-maven-plugin</artifactId>
+				<version>2.10</version>
+				<extensions>true</extensions>
+				<configuration>
+					<filtering>false</filtering>
+					<tiles>
+						<tile>cd.connect.tiles:tile-java:[1.1, 2)</tile>
+					</tiles>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

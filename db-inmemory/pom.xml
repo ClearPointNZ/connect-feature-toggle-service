@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>cd.connect.features</groupId>
-	<artifactId>connect-feature-service-rest</artifactId>
+	<artifactId>feature-db-inmemory</artifactId>
 	<version>2.1-SNAPSHOT</version>
-	<name>feature-service-rest</name>
+	<name>feature-db-inmemory</name>
 
 	<description>
-		This is the core functionality of the feature toggle service. It orchestrates the GRPC and
-		REST clients and validates their changes and pushes them to the backend.
+		The SQL backend for the feature toggle service. It is ebean and you need to include your versions
+		of those dependencies. This has been successfully deployed under Spring/Jetty and Netty+Jersey+GRPC.
 	</description>
 
 	<url>https://clearpointnz.github.io/connect/</url>
@@ -36,48 +36,17 @@
 		<tag>HEAD</tag>
 	</scm>
 
-
 	<dependencies>
-    <dependency>
+		<dependency>
       <groupId>cd.connect.features</groupId>
-      <artifactId>connect-feature-service</artifactId>
+      <artifactId>connect-feature-service-java-api</artifactId>
       <version>2.1-SNAPSHOT</version>
-    </dependency>
-
-    <!-- the REST API -->
-    <dependency>
-      <groupId>cd.connect.features</groupId>
-      <artifactId>service-rest-openapi-java</artifactId>
-      <version>1.1-SNAPSHOT</version>
-    </dependency>
-
-    <!-- jersey -->
-		<dependency>
-			<groupId>cd.connect.composites.java</groupId>
-			<artifactId>connect-composite-jersey</artifactId>
-			<version>[1.1, 2)</version>
-			<scope>provided</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>cd.connect.composites.java</groupId>
-			<artifactId>connect-composite-jersey</artifactId>
-			<version>[1.1, 2)</version>
-			<scope>provided</scope>
-		</dependency>
-    
 
 		<!-- testing -->
 		<dependency>
 			<groupId>cd.connect.composites.java</groupId>
 			<artifactId>connect-composite-test</artifactId>
-			<version>[1.1, 2)</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>cd.connect.composites.java</groupId>
-			<artifactId>connect-composite-groovy</artifactId>
 			<version>[1.1, 2)</version>
 			<scope>test</scope>
 		</dependency>
@@ -94,7 +63,6 @@
 					<filtering>false</filtering>
 					<tiles>
 						<tile>cd.connect.tiles:tile-java:[1.1, 2)</tile>
-						<!--<tile>cd.connect.tiles:tile-groovy:[1.1, 2)</tile>-->
 					</tiles>
 				</configuration>
 			</plugin>

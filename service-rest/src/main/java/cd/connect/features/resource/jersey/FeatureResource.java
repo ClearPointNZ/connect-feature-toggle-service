@@ -1,8 +1,8 @@
 package cd.connect.features.resource.jersey;
 
-import cd.connect.features.api.FeatureService;
-import cd.connect.features.api.FeatureState;
-import cd.connect.features.db.FeatureDb;
+import cd.connect.features.FeatureService;
+import cd.connect.features.FeatureState;
+import cd.connect.features.api.FeatureDb;
 import cd.connect.features.services.BadStateException;
 import cd.connect.features.services.FeatureStateChangeService;
 import io.swagger.annotations.Api;
@@ -12,9 +12,12 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 /**
@@ -31,9 +34,28 @@ public class FeatureResource implements FeatureService {
 		this.featureStateChangeService = featureStateChangeService;
 	}
 
+	private FeatureState from(cd.connect.features.api.FeatureState fs) {
+	  return new FeatureState().name(fs.getName()).locked(fs.isLocked())
+      .whenEnabled(fs.getWhenEnabled() == null ? null : fs.getWhenEnabled().atZone(ZoneOffset.systemDefault()).toOffsetDateTime());
+  }
+
+  private cd.connect.features.api.FeatureState to(FeatureState fs) {
+	  return new cd.connect.features.api.FeatureState(fs.getName(),
+      fs.getWhenEnabled() == null ? null : LocalDateTime.from(fs.getWhenEnabled()),
+      fs.isLocked());
+  }
+
+  private List<FeatureState> from(List<cd.connect.features.api.FeatureState> fs) {
+	  return fs.stream().map(this::from).collect(Collectors.toList());
+  }
+
+  private List<cd.connect.features.api.FeatureState> to(List<FeatureState> fs) {
+	  return fs.stream().map(this::to).collect(Collectors.toList());
+  }
+
 	@Override
 	public FeatureState getFeature(String feature_name) {
-		FeatureState fs = featureDb.getFeature(feature_name);
+		FeatureState fs = from(featureDb.getFeature(feature_name));
 
 		if (fs == null) {
 			throw new NotFoundException("No such feature");
@@ -43,16 +65,18 @@ public class FeatureResource implements FeatureService {
 	}
 
 	@Override
-	public List<FeatureState> all_features() {
-		return new ArrayList<>(featureDb.getFeatures().values());
+	public List<FeatureState> allFeatures() {
+		return new ArrayList<>(from(new ArrayList<>(featureDb.getFeatures().values())));
 	}
 
 	@Override
 	public List<FeatureState> applyAll(List<FeatureState> entries) {
-		Map<String, FeatureState> states = featureDb.getFeatures();
+		Map<String, cd.connect.features.api.FeatureState> states = featureDb.getFeatures();
+
+    List<cd.connect.features.api.FeatureState> internalFeatureEntries = to(entries);
 
 		try {
-			featureStateChangeService.validStateCheck(entries);
+      featureStateChangeService.validStateCheck(internalFeatureEntries);
 		} catch (BadStateException e) {
 			throw new BadRequestException(e.getMessage());
 		}
@@ -63,43 +87,39 @@ public class FeatureResource implements FeatureService {
 			throw new NotFoundException("One or more features do not exist.");
 		}
 
-		entries.forEach(featureDb::apply);
+		internalFeatureEntries.forEach(featureDb::apply);
 
-		return all_features();
+		return allFeatures();
 	}
 
 	@Override
-	public void refresh() {
+	public String refresh() {
 		featureDb.refresh();
+		return "ok";
 	}
 
 	@Override
-	public int count() {
+	public Integer count() {
 		return featureDb.getFeatures().size();
 	}
 
 	@Override
-	public List<String> enabled() {
+	public List<String> enabledFeatures() {
 		return featureDb.getFeatures()
 			.values()
 			.stream()
-			.filter(FeatureState::isEnabled)
-			.map(FeatureState::getName)
+			.filter(cd.connect.features.api.FeatureState::isEnabled)
+			.map(cd.connect.features.api.FeatureState::getName)
 			.collect(Collectors.toList());
 	}
-
+	
 	@Override
-	public List<String> enableAll(LocalDateTime when) {
-		return featureStateChangeService.enableAll(when);
-	}
-
-	@Override
-	public String enable(String name) {
+	public FeatureState enableFeature(String name) {
 		return changeState(name, featureStateChangeService::enable);
 	}
 
-	private String changeState(String name, CheckFunc checkFunc) {
-		FeatureState fs = featureDb.getFeature(name);
+	private FeatureState changeState(String name, CheckFunc checkFunc) {
+    cd.connect.features.api.FeatureState fs = featureDb.getFeature(name);
 
 		if (fs == null) {
 			throw new NotFoundException();
@@ -111,25 +131,36 @@ public class FeatureResource implements FeatureService {
 			throw new BadRequestException(Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build());
 		}
 
-		return fs.getName();
+		// get it again as it might have changed
+    return from(featureDb.getFeature(name));
 	}
 
 	@Override
-	public String disable(String name) {
+	public FeatureState disableFeature(String name) {
 		return changeState(name, featureStateChangeService::disable);
 	}
 
-	@Override
-	public String lock(String name) {
+  @Override
+  public List<String> disabledFeatures() {
+    return featureDb.getFeatures()
+      .values()
+      .stream()
+      .filter(f -> !f.isEnabled())
+      .map(cd.connect.features.api.FeatureState::getName)
+      .collect(Collectors.toList());
+  }
+
+  @Override
+	public FeatureState lockFeature(String name) {
 		return changeState(name, featureStateChangeService::lock);
 	}
 
 	@Override
-	public String unlock(String name) {
+	public FeatureState unlockFeature(String name) {
 		return changeState(name, featureStateChangeService::unlock);
 	}
 
 	interface CheckFunc {
-		void check(FeatureState fs) throws BadStateException;
+		void check(cd.connect.features.api.FeatureState fs) throws BadStateException;
 	}
 }

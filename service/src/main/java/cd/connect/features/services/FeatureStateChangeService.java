@@ -3,6 +3,7 @@ package cd.connect.features.services;
 import cd.connect.features.api.FeatureDb;
 import cd.connect.features.api.FeatureState;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 public class FeatureStateChangeService {
 	private final FeatureDb featureDb;
 
+	@Inject
 	public FeatureStateChangeService(FeatureDb featureDb) {
 		this.featureDb = featureDb;
 	}
