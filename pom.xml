@@ -15,7 +15,7 @@
     <module>service</module>
     <module>db-sql</module>
     <module>db-inmemory</module>
-    <module>sample-app-inmemory</module>
+    <module>sample-featureservice-inmemory</module>
     <module>service-rest</module>
     <module>service-grpc</module>
     <module>openapi</module>

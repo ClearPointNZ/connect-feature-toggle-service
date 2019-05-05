@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>cd.connect.features</groupId>
-	<artifactId>sample-app-inmemory</artifactId>
+	<artifactId>sample-featureservice-inmemory</artifactId>
 	<version>2.1-SNAPSHOT</version>
-	<name>sample-app-inmemory</name>
+	<name>sample-featureservice-inmemory</name>
 
 	<description>
     A feature toggle service using an in memory database. You can build this one yourself by including it as
@@ -166,6 +166,42 @@
 					</tiles>
 				</configuration>
 			</plugin>
+
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>1.1.2</version>
+        <executions>
+          <execution>
+            <id>docker-build</id>
+            <phase>install</phase>
+            <goals>
+              <goal>buildTar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <allowInsecureRegistries>false</allowInsecureRegistries>
+          <from>
+            <image>openjdk:11.0.3-jdk-slim-stretch</image>
+          </from>
+          <to><image>cdconnect/${project.artifactId}</image></to>
+          <container>
+            <mainClass>bathe.BatheBooter</mainClass>
+            <jvmFlags>
+              <jvmFlag>--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED</jvmFlag>
+              <jvmFlag>-Dio.netty.tryReflectionSetAccessible=true</jvmFlag>
+              <jvmFlag>--add-opens=java.base/java.nio=ALL-UNNAMED</jvmFlag>
+            </jvmFlags>
+            <args>
+              <arg>-Rcd.connect.features.inmemory.Application</arg>
+            </args>
+            <ports>
+              <port>8553</port>
+            </ports>
+          </container>
+        </configuration>
+      </plugin>
 		</plugins>
 	</build>
 </project>

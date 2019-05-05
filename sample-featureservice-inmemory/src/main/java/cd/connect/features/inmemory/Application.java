@@ -26,7 +26,7 @@ public class Application {
   @ConfigKey("listSource")
   String listSource = "";
   @ConfigKey("server.port")
-  String serverPort = "8099";
+  String serverPort = "8553";
 
   private static final Logger log = LoggerFactory.getLogger(Application.class);
 
