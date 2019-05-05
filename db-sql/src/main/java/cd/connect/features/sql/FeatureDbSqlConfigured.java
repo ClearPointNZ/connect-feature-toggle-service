@@ -1,8 +1,7 @@
 package cd.connect.features.sql;
 
-import com.bluetrainsoftware.common.config.ConfigKey;
-import com.bluetrainsoftware.common.config.PreStart;
-import net.stickycode.stereotype.configured.PostConfigured;
+import cd.connect.app.config.ConfigKey;
+import cd.connect.app.config.DeclaredConfigResolver;
 
 import javax.inject.Inject;
 
@@ -13,24 +12,16 @@ public class FeatureDbSqlConfigured {
   @ConfigKey("mysql.refresh-period-in-seconds")
   Integer refreshPeriod;
   private FeatureSqlDb sqlDb;
-  private final EbeanSource ebeanServer;
 
   @Inject
   public FeatureDbSqlConfigured(EbeanSource ebeanServer) {
-    this.ebeanServer = ebeanServer;
+    DeclaredConfigResolver.resolve(this);
+
+    sqlDb = new FeatureSqlDb(ebeanServer, refreshPeriod);
+    sqlDb.init();
   }
 
   public FeatureSqlDb getSqlDb() {
     return sqlDb;
-  }
-
-  @PostConfigured
-  public void initPolling() {
-    sqlDb = new FeatureSqlDb(ebeanServer, refreshPeriod);
-  }
-
-  @PreStart
-  public void init() {
-    sqlDb.init();
   }
 }

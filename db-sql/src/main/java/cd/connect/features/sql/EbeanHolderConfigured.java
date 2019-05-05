@@ -1,8 +1,8 @@
 package cd.connect.features.sql;
 
-import com.bluetrainsoftware.common.config.ConfigKey;
+import cd.connect.app.config.ConfigKey;
+import cd.connect.app.config.DeclaredConfigResolver;
 import io.ebean.EbeanServer;
-import net.stickycode.stereotype.configured.PostConfigured;
 
 /**
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
@@ -18,11 +18,10 @@ public class EbeanHolderConfigured {
   String dbUsername;
   @ConfigKey("db.max-connections")
   Integer maxConnections = 3;
-  private EbeanHolder ebeanServer;
+  private final EbeanHolder ebeanServer;
 
-
-  @PostConfigured
-  public void init() {
+  public EbeanHolderConfigured() {
+    DeclaredConfigResolver.resolve(this);
     ebeanServer = new EbeanHolder(dbUrl, dbUsername, dbPassword, maxConnections, dbDriver);
   }
 

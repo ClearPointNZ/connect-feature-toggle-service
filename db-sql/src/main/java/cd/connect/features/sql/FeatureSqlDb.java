@@ -1,5 +1,6 @@
 package cd.connect.features.sql;
 
+import cd.connect.features.api.FeatureDb;
 import cd.connect.features.api.FeatureSourceStatus;
 import cd.connect.features.api.FeatureState;
 import io.ebean.EbeanServer;
@@ -95,18 +96,18 @@ public class FeatureSqlDb implements FeatureDb {
   public void ensureExists(Map<String, FeatureSourceStatus> features) {
     EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
 
-    features.entrySet().forEach((entry) -> {
-      SqlFeatureState featureState = ebeanServer.find(SqlFeatureState.class, entry.getKey());
+    features.forEach((key, value) -> {
+      SqlFeatureState featureState = ebeanServer.find(SqlFeatureState.class, key);
 
       if (featureState == null) {
-        featureState = new SqlFeatureState(entry.getKey(),
-          entry.getValue() == FeatureSourceStatus.ENABLED ? LocalDateTime.now() : null,
-          entry.getValue() == FeatureSourceStatus.LOCKED);
+        featureState = new SqlFeatureState(key,
+          value == FeatureSourceStatus.ENABLED ? LocalDateTime.now() : null,
+          value == FeatureSourceStatus.LOCKED);
 
         ebeanServer.save(featureState);
       }
       // else {
-        // it is there, leave it alone
+      // it is there, leave it alone
       //}
     });
 
