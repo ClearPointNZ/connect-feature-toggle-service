@@ -21,7 +21,7 @@ paths:
     put:
       tags:
         - FeatureService
-      description: "Gets a list of features and their states"
+      description: "Sets a list of features and their states in a single request"
       operationId: applyAll
       requestBody:
         required: true
