@@ -21,9 +21,9 @@
     <module>openapi</module>
     <module>service-rest-openapi-java</module>
     <!--<module>service-etcd</module>-->
-<!--    <module>client-base</module>-->
+    <module>client-base</module>
 <!--    <module>client-grpc</module>-->
-<!--    <module>client-rest</module>-->
+    <module>client-rest</module>
   </modules>
 
 </project>

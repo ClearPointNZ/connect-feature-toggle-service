@@ -5,26 +5,20 @@ import cd.connect.app.config.DeclaredConfigResolver;
 import cd.connect.features.api.FeatureDb;
 import cd.connect.features.init.FeatureSource;
 import cd.connect.features.resource.jersey.FeatureBinder;
-import cd.connect.features.resource.jersey.FeatureResource;
 import cd.connect.features.resource.jersey.FeatureServiceFeature;
-import cd.connect.features.services.FeatureStateChangeService;
 import cd.connect.jersey.common.CommonConfiguration;
 import cd.connect.jersey.common.InfrastructureConfiguration;
-import cd.connect.jersey.common.JacksonContextProvider;
-import cd.connect.jersey.common.JerseyExceptionMapper;
 import cd.connect.jersey.common.LoggingConfiguration;
 import cd.connect.lifecycle.ApplicationLifecycleManager;
 import cd.connect.lifecycle.LifecycleStatus;
-import io.netty.channel.Channel;
-import org.glassfish.jersey.internal.inject.AbstractBinder;
-import org.glassfish.jersey.logging.JerseyServerLogger;
-import org.glassfish.jersey.netty.httpserver.NettyHttpContainerProvider;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Singleton;
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
 public class Application {
   @ConfigKey("enumSource")
@@ -50,8 +44,6 @@ public class Application {
     ResourceConfig config = new ResourceConfig()
       .register(FeatureServiceFeature.class)
       .register(new FeatureBinder(db))
-      .register(JacksonContextProvider.class)
-      .register(JerseyExceptionMapper.class)
       .register(InfrastructureConfiguration.class)
       .register(CommonConfiguration.class)
       .register(LoggingConfiguration.class)
@@ -59,15 +51,15 @@ public class Application {
 
     new FeatureSource(db, enumSource, listSource);
 
-    Channel server = NettyHttpContainerProvider.createHttp2Server(BASE_URI, config, null);
-
-    ApplicationLifecycleManager.updateStatus(LifecycleStatus.STARTED);
+    final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, config, true);
 
     ApplicationLifecycleManager.registerListener(trans -> {
       if (trans.next == LifecycleStatus.TERMINATING) {
-        server.close();
+        server.shutdown(10, TimeUnit.SECONDS);
       }
     });
+
+    ApplicationLifecycleManager.updateStatus(LifecycleStatus.STARTED);
 
     Thread.currentThread().join();
   }

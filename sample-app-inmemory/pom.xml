@@ -72,6 +72,19 @@
       </exclusions>
     </dependency>
 
+    <!-- ensures JUL goes to SLF4J -->
+    <dependency>
+      <groupId>com.bluetrainsoftware.bathe.initializers</groupId>
+      <artifactId>jul-bridge</artifactId>
+      <version>2.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <dependency>
       <groupId>cd.connect.common</groupId>
       <artifactId>connect-app-declare-config</artifactId>
@@ -87,6 +100,12 @@
       <groupId>cd.connect.common</groupId>
       <artifactId>connect-java-logging-log4j2</artifactId>
       <version>1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>cd.connect.composites.java</groupId>
+      <artifactId>connect-composite-logging</artifactId>
+      <version>[1.2, 2)</version>
     </dependency>
 
     <dependency>
@@ -120,20 +139,8 @@
 
     <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
-      <artifactId>jersey-container-netty-http</artifactId>
+      <artifactId>jersey-container-grizzly2-http</artifactId>
       <version>${jersey.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-all</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-all</artifactId>
-      <version>4.1.36.Final</version>
     </dependency>
 
 		<!-- testing -->

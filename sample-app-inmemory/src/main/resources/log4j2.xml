@@ -3,9 +3,6 @@
 		<Console name="STDOUT" target="SYSTEM_OUT">
 			<!--<ConnectJsonLayout/>-->
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%thread] %-5level %class{36}.%M %logger{36} - %msg%n"/>
-			<!--<JsonLayout complete="false" compact="true" eventEol="true" objectMessageAsJsonObject="false" properties="true" stacktraceAsString="true">-->
-			<!--<KeyValuePair key="timestamp" value="$${date:yyyy-MM-dd'T'HH:mm:ss.SSSZ}"/>-->
-			<!--</JsonLayout>-->
 		</Console>
 	</Appenders>
 
@@ -14,7 +11,7 @@
 <!--		<AsyncLogger name="org.glassfish" level="debug"/>-->
 		<AsyncLogger name="jersey-logging" level="trace"/>
 
-		<AsyncRoot level="debug">
+		<AsyncRoot level="info">
 			<AppenderRef ref="STDOUT"/>
 		</AsyncRoot>
 	</Loggers>
