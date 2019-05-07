@@ -13,34 +13,6 @@
     own feature toggles dependency built in.
 	</description>
 
-	<url>https://clearpointnz.github.io/connect/</url>
-	<developers>
-		<developer>
-			<email>richard@bluetrainsoftware.com</email>
-			<id>rvowles</id>
-			<name>Richard Vowles</name>
-			<organization>on behalf of ClearPoint NZ Ltd</organization>
-		</developer>
-	</developers>
-
-	<licenses>
-		<license>
-			<name>Apache License 2.0</name>
-			<url>https://opensource.org/licenses/Apache-2.0</url>
-		</license>
-	</licenses>
-
-	<scm>
-		<connection>scm:git:git@github.com:clearpointnz/connect-feature-toggle-server.git</connection>
-		<developerConnection>scm:git:git@github.com:clearpointnz/connect-feature-toggle-server.git</developerConnection>
-		<url>git@github.com:clearpointnz/connect-feature-toggle-server.git</url>
-		<tag>HEAD</tag>
-	</scm>
-
-  <properties>
-    <jersey.version>2.28</jersey.version>
-  </properties>
-
 	<dependencies>
 		<dependency>
       <groupId>cd.connect.features</groupId>
@@ -53,94 +25,10 @@
       <version>2.1-SNAPSHOT</version>
 		</dependency>
 
-    <!-- runner and property loader -->
-    <dependency>
-      <groupId>com.bluetrainsoftware.bathe</groupId>
-      <artifactId>bathe-booter</artifactId>
-      <version>[3.1, 4)</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.bluetrainsoftware.bathe.initializers</groupId>
-      <artifactId>system-property-loader</artifactId>
-      <version>3.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- ensures JUL goes to SLF4J -->
-    <dependency>
-      <groupId>com.bluetrainsoftware.bathe.initializers</groupId>
-      <artifactId>jul-bridge</artifactId>
-      <version>2.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>cd.connect.common</groupId>
-      <artifactId>connect-app-declare-config</artifactId>
-      <version>1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>cd.connect.common</groupId>
-      <artifactId>connect-app-lifecycle</artifactId>
-      <version>1.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>cd.connect.common</groupId>
-      <artifactId>connect-java-logging-log4j2</artifactId>
-      <version>1.1</version>
-    </dependency>
-
     <dependency>
       <groupId>cd.connect.composites.java</groupId>
-      <artifactId>connect-composite-logging</artifactId>
-      <version>[1.2, 2)</version>
-    </dependency>
-
-    <dependency>
-      <groupId>cd.connect.jersey</groupId>
-      <artifactId>jersey-common</artifactId>
+      <artifactId>connect-composite-restapp</artifactId>
       <version>[1.1, 2)</version>
-    </dependency>
-    <dependency>
-      <groupId>cd.connect.common</groupId>
-      <artifactId>connect-prometheus-jersey</artifactId>
-      <version>[2.2, 3)</version>
-    </dependency>
-
-		<dependency>
-			<groupId>cd.connect.composites.java</groupId>
-			<artifactId>connect-composite-jersey</artifactId>
-			<version>[1.1, 2)</version>
-		</dependency>
-    <dependency>
-      <groupId>cd.connect.common</groupId>
-      <artifactId>connect-java-jackson</artifactId>
-      <version>[1.2, 2)</version>
-    </dependency>
-
-		<dependency>
-			<groupId>cd.connect.composites.java</groupId>
-			<artifactId>connect-composite-prometheus</artifactId>
-			<version>[1.1,2)</version>
-			<scope>provided</scope>
-		</dependency>
-
-    <dependency>
-      <groupId>org.glassfish.jersey.containers</groupId>
-      <artifactId>jersey-container-grizzly2-http</artifactId>
-      <version>${jersey.version}</version>
     </dependency>
 
 		<!-- testing -->
@@ -174,7 +62,7 @@
         <executions>
           <execution>
             <id>docker-build</id>
-            <phase>install</phase>
+            <phase>package</phase>
             <goals>
               <goal>buildTar</goal>
             </goals>

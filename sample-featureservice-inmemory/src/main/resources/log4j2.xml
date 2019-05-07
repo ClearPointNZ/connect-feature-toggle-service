@@ -11,7 +11,7 @@
 <!--		<AsyncLogger name="org.glassfish" level="debug"/>-->
 		<AsyncLogger name="jersey-logging" level="trace"/>
 
-		<AsyncRoot level="info">
+		<AsyncRoot level="trace">
 			<AppenderRef ref="STDOUT"/>
 		</AsyncRoot>
 	</Loggers>
