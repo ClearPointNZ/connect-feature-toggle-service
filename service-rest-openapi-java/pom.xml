@@ -91,10 +91,10 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>cd.connect.features</groupId>
-                  <artifactId>openapi</artifactId>
+                  <artifactId>connect-feature-service-openapi</artifactId>
                   <version>1.1-SNAPSHOT</version>
                   <type>jar</type>
-                  <outputDirectory>${project.basedir}/openapi/</outputDirectory>
+                  <outputDirectory>${project.basedir}/target/openapi/</outputDirectory>
                 </artifactItem>
               </artifactItems>
               <overWriteReleases>true</overWriteReleases>
@@ -126,7 +126,7 @@
               <output>${project.basedir}/target/generated-sources/api</output>
               <apiPackage>cd.connect.features</apiPackage>
               <modelPackage>cd.connect.features</modelPackage>
-              <inputSpec>${project.basedir}/openapi/api/feature-service-api.yaml</inputSpec>
+              <inputSpec>${project.basedir}/target/openapi/api/feature-service-api.yaml</inputSpec>
               <language>jersey2-api</language>
               <library>jersey2-api</library>
 
