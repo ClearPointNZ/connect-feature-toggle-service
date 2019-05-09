@@ -6,19 +6,17 @@ import cd.connect.features.api.FeatureDb;
 import cd.connect.features.init.FeatureSource;
 import cd.connect.features.resource.jersey.FeatureBinder;
 import cd.connect.features.resource.jersey.FeatureServiceFeature;
+import cd.connect.jersey.JerseyHttp2Server;
 import cd.connect.jersey.common.CommonConfiguration;
 import cd.connect.jersey.common.InfrastructureConfiguration;
 import cd.connect.jersey.common.LoggingConfiguration;
 import cd.connect.lifecycle.ApplicationLifecycleManager;
 import cd.connect.lifecycle.LifecycleStatus;
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.util.concurrent.TimeUnit;
 
 public class Application {
   @ConfigKey("enumSource")
@@ -49,15 +47,9 @@ public class Application {
       .register(LoggingConfiguration.class)
       ;
 
+    JerseyHttp2Server.start(config, BASE_URI);
+
     new FeatureSource(db, enumSource, listSource);
-
-    final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, config, true);
-
-    ApplicationLifecycleManager.registerListener(trans -> {
-      if (trans.next == LifecycleStatus.TERMINATING) {
-        server.shutdown(10, TimeUnit.SECONDS);
-      }
-    });
 
     ApplicationLifecycleManager.updateStatus(LifecycleStatus.STARTED);
 
