@@ -4,7 +4,7 @@
 
 	<groupId>cd.connect.features</groupId>
 	<artifactId>service-rest-openapi-java</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 	<name>service-rest-openapi-java</name>
 
 	<description>
@@ -32,7 +32,7 @@
 		<connection>scm:git:git@github.com:clearpointnz/connect-feature-toggle-server.git</connection>
 		<developerConnection>scm:git:git@github.com:clearpointnz/connect-feature-toggle-server.git</developerConnection>
 		<url>git@github.com:clearpointnz/connect-feature-toggle-server.git</url>
-		<tag>HEAD</tag>
+		<tag>service-rest-openapi-java-1.1</tag>
 	</scm>
 
   <properties>
