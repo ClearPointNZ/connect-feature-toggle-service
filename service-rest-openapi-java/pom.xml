@@ -90,7 +90,7 @@
                 <artifactItem>
                   <groupId>cd.connect.features</groupId>
                   <artifactId>connect-feature-service-openapi</artifactId>
-                  <version>1.1-SNAPSHOT</version>
+                  <version>1.1</version>
                   <type>jar</type>
                   <outputDirectory>${project.basedir}/target/openapi/</outputDirectory>
                 </artifactItem>
@@ -110,7 +110,7 @@
           <dependency>
             <groupId>cd.connect.openapi</groupId>
             <artifactId>connect-openapi-jersey2</artifactId>
-            <version>3.5-SNAPSHOT</version>
+            <version>3.6</version>
           </dependency>
         </dependencies>
         <executions>
