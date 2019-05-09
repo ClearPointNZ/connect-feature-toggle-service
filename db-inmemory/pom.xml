@@ -8,8 +8,7 @@
 	<name>feature-db-inmemory</name>
 
 	<description>
-		The SQL backend for the feature toggle service. It is ebean and you need to include your versions
-		of those dependencies. This has been successfully deployed under Spring/Jetty and Netty+Jersey+GRPC.
+    This is an in memory demo focused copy of the feature db.
 	</description>
 
 	<url>https://clearpointnz.github.io/connect/</url>
