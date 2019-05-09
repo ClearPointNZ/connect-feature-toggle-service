@@ -1,8 +1,5 @@
 package cd.connect.features.api;
 
-import cd.connect.features.api.FeatureSourceStatus;
-import cd.connect.features.api.FeatureState;
-
 import java.util.Map;
 import java.util.function.Consumer;
 

@@ -35,37 +35,7 @@
 		<tag>HEAD</tag>
 	</scm>
 
-
 	<dependencies>
-    <!-- the API for REST we need to implement -->
-    <dependency>
-      <groupId>cd.connect.features</groupId>
-      <artifactId>service-rest-openapi-java</artifactId>
-      <version>1.1-SNAPSHOT</version>
-    </dependency>
-    
-		<!-- jersey -->
-		<dependency>
-			<groupId>cd.connect.composites.java</groupId>
-			<artifactId>connect-composite-jersey</artifactId>
-			<version>[1.1, 2)</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>cd.connect.composites.java</groupId>
-			<artifactId>connect-composite-prometheus</artifactId>
-			<version>[1.1,2)</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- testing -->
-		<dependency>
-			<groupId>cd.connect.composites.java</groupId>
-			<artifactId>connect-composite-test</artifactId>
-			<version>[1.1, 2)</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 	<build>

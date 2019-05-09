@@ -43,22 +43,24 @@
       <artifactId>connect-feature-service-java-api</artifactId>
       <version>2.1-SNAPSHOT</version>
     </dependency>
+    
     <dependency>
       <groupId>cd.connect.composites.java</groupId>
       <artifactId>connect-composite-logging</artifactId>
       <version>[1.1, 2)</version>
     </dependency>
+
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+      <scope>provided</scope>
+    </dependency>
+    
 		<!-- testing -->
 		<dependency>
 			<groupId>cd.connect.composites.java</groupId>
 			<artifactId>connect-composite-test</artifactId>
-			<version>[1.1, 2)</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>cd.connect.composites.java</groupId>
-			<artifactId>connect-composite-groovy</artifactId>
 			<version>[1.1, 2)</version>
 			<scope>test</scope>
 		</dependency>
@@ -75,7 +77,6 @@
 					<filtering>false</filtering>
 					<tiles>
 						<tile>cd.connect.tiles:tile-java:[1.1, 2)</tile>
-						<!--<tile>cd.connect.tiles:tile-groovy:[1.1, 2)</tile>-->
 					</tiles>
 				</configuration>
 			</plugin>

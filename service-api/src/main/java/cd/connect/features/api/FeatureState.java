@@ -1,16 +1,10 @@
 package cd.connect.features.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.time.LocalDateTime;
 
 /**
  * ignore unknown properties so it is backwards compatible.
- *
- * @author Richard Vowles - https://plus.google.com/+RichardVowles
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class FeatureState implements Comparable<FeatureState> {
   /**
    * this allows features to be transferred by their name and mapped to their local Enum (if any)
@@ -58,7 +52,6 @@ public class FeatureState implements Comparable<FeatureState> {
     this.name = name;
   }
 
-  @JsonIgnore
   public boolean isEnabled() {
     return whenEnabled != null;
   }

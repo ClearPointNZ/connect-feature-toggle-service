@@ -1,8 +1,5 @@
 package cd.connect.features.api;
 
-/**
- * @author Richard Vowles - https://plus.google.com/+RichardVowles
- */
 public enum FeatureSourceStatus {
   LOCKED, // cannot be enabled unless unlocked
   UNLOCKED, // can be locked or enabled
