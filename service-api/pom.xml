@@ -4,7 +4,7 @@
 
 	<groupId>cd.connect.features</groupId>
 	<artifactId>connect-feature-service-java-api</artifactId>
-	<version>1.2-SNAPSHOT</version>
+	<version>2.1-SNAPSHOT</version>
 	<name>feature-service-java-api</name>
 
 	<description>
@@ -37,6 +37,13 @@
 
 
 	<dependencies>
+    <!-- the API for REST we need to implement -->
+    <dependency>
+      <groupId>cd.connect.features</groupId>
+      <artifactId>service-rest-openapi-java</artifactId>
+      <version>1.1-SNAPSHOT</version>
+    </dependency>
+    
 		<!-- jersey -->
 		<dependency>
 			<groupId>cd.connect.composites.java</groupId>

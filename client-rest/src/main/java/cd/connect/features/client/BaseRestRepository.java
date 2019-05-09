@@ -1,9 +1,11 @@
 package cd.connect.features.client;
 
-import cd.connect.features.api.FeatureService;
-import org.glassfish.jersey.client.proxy.WebResourceFactory;
+import cd.connect.features.FeatureService;
+import cd.connect.features.impl.FeatureServiceImpl;
+import cd.connect.openapi.support.ApiClient;
 
 import javax.ws.rs.client.Client;
+import java.time.LocalDateTime;
 
 /**
  * @author Richard Vowles - https://plus.google.com/+RichardVowles
@@ -14,7 +16,7 @@ public class BaseRestRepository implements FeatureRepository {
   protected final FeatureService featureService;
 
   public BaseRestRepository(Client client, String url) {
-    this.featureService = WebResourceFactory.newResource(FeatureService.class, client.target(url));
+    this.featureService = new FeatureServiceImpl(new ApiClient(client, url));
   }
 
   /**
@@ -29,9 +31,9 @@ public class BaseRestRepository implements FeatureRepository {
     featureState.name = name;
 
     try {
-      cd.connect.features.api.FeatureState feature = featureService.getFeature(name);
+      cd.connect.features.FeatureState feature = featureService.getFeature(name);
 
-      featureState.whenEnabled = feature.getWhenEnabled();
+      featureState.whenEnabled = LocalDateTime.from(feature.getWhenEnabled());
       featureState.locked = feature.isLocked();
     } catch (Exception ex) {
       featureState.locked = true;

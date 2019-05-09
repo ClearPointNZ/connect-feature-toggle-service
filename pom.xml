@@ -13,10 +13,14 @@
     <module>service-api</module>
     <module>grpc-api</module>
     <module>service</module>
-    <module>service-sql</module>
-    <module>service-mysql</module>
+    <module>db-sql</module>
+    <module>db-inmemory</module>
+    <module>sample-featureservice-inmemory</module>
+    <module>service-rest</module>
+    <module>service-grpc</module>
+    <module>openapi</module>
+    <module>service-rest-openapi-java</module>
     <!--<module>service-etcd</module>-->
-    <module>service-db-api</module>
     <module>client-base</module>
     <module>client-grpc</module>
     <module>client-rest</module>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>cd.connect.features</groupId>
+	<artifactId>sample-featureservice-inmemory</artifactId>
+	<version>2.1-SNAPSHOT</version>
+	<name>sample-featureservice-inmemory</name>
+
+	<description>
+    A feature toggle service using an in memory database. You can build this one yourself by including it as
+    dependency and adding your own docker imaging in at the end. You would wish to do this so you get your
+    own feature toggles dependency built in.
+	</description>
+
+	<dependencies>
+		<dependency>
+      <groupId>cd.connect.features</groupId>
+      <artifactId>feature-db-inmemory</artifactId>
+      <version>2.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+      <groupId>cd.connect.features</groupId>
+      <artifactId>connect-feature-service-rest</artifactId>
+      <version>2.1-SNAPSHOT</version>
+		</dependency>
+
+    <dependency>
+      <groupId>cd.connect.composites.java</groupId>
+      <artifactId>connect-composite-restapp</artifactId>
+      <version>[1.1, 2)</version>
+    </dependency>
+
+ 
+
+		<!-- testing -->
+		<dependency>
+			<groupId>cd.connect.composites.java</groupId>
+			<artifactId>connect-composite-test</artifactId>
+			<version>[1.1, 2)</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.repaint.maven</groupId>
+				<artifactId>tiles-maven-plugin</artifactId>
+				<version>2.10</version>
+				<extensions>true</extensions>
+				<configuration>
+					<filtering>false</filtering>
+					<tiles>
+						<tile>cd.connect.tiles:tile-java:[1.1, 2)</tile>
+					</tiles>
+				</configuration>
+			</plugin>
+
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>1.1.2</version>
+        <executions>
+          <execution>
+            <id>docker-build</id>
+            <phase>package</phase>
+            <goals>
+              <goal>buildTar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <allowInsecureRegistries>false</allowInsecureRegistries>
+          <from>
+            <image>openjdk:11.0.3-jdk-slim-stretch</image>
+          </from>
+          <to><image>cdconnect/${project.artifactId}</image></to>
+          <container>
+            <mainClass>bathe.BatheBooter</mainClass>
+            <jvmFlags>
+              <jvmFlag>--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED</jvmFlag>
+              <jvmFlag>-Dio.netty.tryReflectionSetAccessible=true</jvmFlag>
+              <jvmFlag>--add-opens=java.base/java.nio=ALL-UNNAMED</jvmFlag>
+            </jvmFlags>
+            <args>
+              <arg>-Rcd.connect.features.inmemory.Application</arg>
+            </args>
+            <ports>
+              <port>8553</port>
+            </ports>
+          </container>
+        </configuration>
+      </plugin>
+		</plugins>
+	</build>
+</project>
