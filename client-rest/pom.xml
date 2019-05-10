@@ -4,7 +4,7 @@
 
 	<groupId>cd.connect.features</groupId>
 	<artifactId>feature-service-client-rest</artifactId>
-	<version>2.2-SNAPSHOT</version>
+	<version>2.2</version>
 	<name>feature-service-client-rest</name>
 
 	<description>
@@ -32,7 +32,7 @@
 		<connection>scm:git:git@github.com:clearpointnz/connect-feature-toggle-server.git</connection>
 		<developerConnection>scm:git:git@github.com:clearpointnz/connect-feature-toggle-server.git</developerConnection>
 		<url>git@github.com:clearpointnz/connect-feature-toggle-server.git</url>
-		<tag>HEAD</tag>
+		<tag>feature-service-client-rest-2.2</tag>
 	</scm>
 
   <dependencies>
