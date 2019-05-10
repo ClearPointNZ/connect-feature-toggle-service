@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +93,6 @@ public class FeatureSqlDb implements FeatureDb {
   }
 
   @Override
-  @Transactional
   public void ensureExists(Map<String, FeatureSourceStatus> features) {
     EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
 
@@ -104,7 +104,7 @@ public class FeatureSqlDb implements FeatureDb {
           value == FeatureSourceStatus.ENABLED ? LocalDateTime.now() : null,
           value == FeatureSourceStatus.LOCKED);
 
-        ebeanServer.save(featureState);
+        saveFeatureState(featureState);
       }
       // else {
       // it is there, leave it alone
@@ -118,9 +118,35 @@ public class FeatureSqlDb implements FeatureDb {
       }
     });
 
+  }
+
+  @Transactional
+  private void batchDelete(Collection<SqlFeatureState> deleteItems) {
+    EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
+
     if (deleteItems.size() > 0) {
       deleteItems.forEach(ebeanServer::delete);
     }
+  }
+
+  @Override
+  public void ensureExists(List<String> features) {
+    EbeanServer ebeanServer = ebeanHolder.getEbeanServer();
+
+    features.forEach(f -> {
+      if(ebeanServer.find(SqlFeatureState.class, f) == null) {
+        try {
+          saveFeatureState(new SqlFeatureState(f, null, true));
+        } catch (Exception e) {
+          log.error("Failed to save feature", e);
+        }
+      }
+    });
+  }
+
+  @Transactional
+  private void saveFeatureState(SqlFeatureState fs) {
+    ebeanHolder.getEbeanServer().save(fs);
   }
 
   @Override

@@ -50,4 +50,8 @@ public class BaseGrpcRepository implements FeatureRepository {
 
     return fs;
   }
+
+  @Override
+  public void ensureFeaturesExist(Class<? extends Enum> features) {
+  }
 }

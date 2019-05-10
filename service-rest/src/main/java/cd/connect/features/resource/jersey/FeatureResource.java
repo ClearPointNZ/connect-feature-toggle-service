@@ -12,12 +12,10 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 /**
@@ -112,8 +110,14 @@ public class FeatureResource implements FeatureService {
 			.map(cd.connect.features.api.FeatureState::getName)
 			.collect(Collectors.toList());
 	}
-	
-	@Override
+
+  @Override
+  public List<FeatureState> ensureExists(List<String> body) {
+    featureDb.ensureExists(body);
+    return allFeatures();
+  }
+
+  @Override
 	public FeatureState enableFeature(String name) {
 		return changeState(name, featureStateChangeService::enable);
 	}

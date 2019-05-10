@@ -19,8 +19,6 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 
 public class Application {
-  @ConfigKey("enumSource")
-  String enumSource = "";
   @ConfigKey("listSource")
   String listSource = "";
   @ConfigKey("server.port")
@@ -33,7 +31,7 @@ public class Application {
 
     DeclaredConfigResolver.resolve(this);
 
-    URI BASE_URI = URI.create(String.format("http://localhost:%s/", serverPort));
+    URI BASE_URI = URI.create(String.format("http://0.0.0.0:%s/", serverPort));
 
     log.info("starting on port {}", BASE_URI.toASCIIString());
 
@@ -49,7 +47,7 @@ public class Application {
 
     JerseyHttp2Server.start(config, BASE_URI);
 
-    new FeatureSource(db, enumSource, listSource);
+    new FeatureSource(db, listSource);
 
     ApplicationLifecycleManager.updateStatus(LifecycleStatus.STARTED);
 

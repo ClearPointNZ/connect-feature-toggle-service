@@ -90,7 +90,7 @@
                 <artifactItem>
                   <groupId>cd.connect.features</groupId>
                   <artifactId>connect-feature-service-openapi</artifactId>
-                  <version>1.1</version>
+                  <version>1.2-SNAPSHOT</version>
                   <type>jar</type>
                   <outputDirectory>${project.basedir}/target/openapi/</outputDirectory>
                 </artifactItem>
