@@ -18,30 +18,22 @@ public class FeatureSource {
 	private static final Logger log = LoggerFactory.getLogger(FeatureSource.class);
 	private final FeatureDb featureDatabase;
 	private Map<String, FeatureSourceStatus> features = new HashMap<>();
-	private final String enumSource;
 	private final String inlineSource;
 
-	public FeatureSource(FeatureDb featureDatabase, String enumSource, String inlineSource) {
+	public FeatureSource(FeatureDb featureDatabase, String inlineSource) {
 		this.featureDatabase = featureDatabase;
-		this.enumSource = enumSource;
 		this.inlineSource = inlineSource;
 		
-		if (enumSource.length() > 0) {
-			loadEnumSource();
-		} else if (inlineSource.length() > 0) {
+    if (inlineSource.length() > 0) {
 			loadInlineSource();
-		} else {
-			log.error("There are no sources of features.");
-			throw new RuntimeException("There are no sources of features.");
 		}
 
 		if (featureDatabase != null) {
 			featureDatabase.init(); // ensure it is initialized
-			featureDatabase.ensureExists(features);
+      if (features.size() > 0) {
+        featureDatabase.ensureExists(features);
+      }
 		}
-	}
-
-	public void init() {
 	}
 
 	private void loadInlineSource() {
@@ -65,20 +57,5 @@ public class FeatureSource {
 
 	public Map<String, FeatureSourceStatus> getFeatures() {
 		return features;
-	}
-
-	private void loadEnumSource() {
-		try {
-			Class c = Class.forName(enumSource);
-
-			for (Object enumObject : c.getEnumConstants()) {
-				Enum enumInstance = Enum.class.cast(enumObject);
-
-				features.put(enumInstance.name(), FeatureSourceStatus.toStatus(enumInstance.toString()));
-			}
-		} catch (ClassNotFoundException e) {
-			log.error("Cannot find enum representing features", e);
-			throw new RuntimeException(e);
-		}
 	}
 }

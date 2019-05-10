@@ -1,5 +1,6 @@
 package cd.connect.features.api;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -8,6 +9,7 @@ import java.util.function.Consumer;
  */
 public interface FeatureDb {
   void ensureExists(Map<String, FeatureSourceStatus> features);
+  void ensureExists(List<String> features);
 
   void watch(Consumer<WatchSignal> changed);
 

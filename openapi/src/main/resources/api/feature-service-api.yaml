@@ -39,6 +39,27 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/FeatureState"
+    post:
+      tags:
+        - FeatureService
+      description: "Ensures that this list of features exists in the feature service"
+      operationId: ensureExists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeatureState"
   /features/refresh:
     put:
       tags:

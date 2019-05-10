@@ -88,6 +88,10 @@ public class FeatureStateChangeService {
 		return unlockedNowEnabled;
 	}
 
+	public void ensureFeaturesExist(List<String> features) {
+	  featureDb.ensureExists(features);
+  }
+
 	public void validStateCheck(List<FeatureState> states) throws BadStateException {
 		for (FeatureState fs : states) {
 			if (fs.getWhenEnabled() != null && fs.isLocked()) {

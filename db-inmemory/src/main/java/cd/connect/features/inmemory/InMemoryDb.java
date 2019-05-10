@@ -32,6 +32,11 @@ public class InMemoryDb implements FeatureDb {
   }
 
   @Override
+  public void ensureExists(List<String> features) {
+    features.forEach(f -> this.features.putIfAbsent(f, new FeatureState(f, null, true)));
+  }
+
+  @Override
   public void watch(Consumer<WatchSignal> consumer) {
     watchers.add(consumer);
   }
